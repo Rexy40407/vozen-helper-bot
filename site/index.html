@@ -425,10 +425,14 @@
         window.location.href = authUrl();
       });
       document.getElementById('logoutBtn').addEventListener('click', async () => {
+        const tok = SESSION;
         try {
-          if (API_BASE) await fetch(API_BASE + '/api/logout', { method: 'POST', credentials: 'include' });
+          if (API_BASE) await fetch(API_BASE + '/api/logout', {
+            method: 'POST', credentials: 'include',
+            headers: { Authorization: 'Bearer ' + tok },
+          });
         } catch { /* ignora */ }
-        window.location.href = REDIRECT_URI;
+        expireSession(); // limpa a sessão guardada + estado e volta ao login (sem reload → sem restore)
       });
 
       // ── Painel ──────────────────────────────────────────────────────────────────
