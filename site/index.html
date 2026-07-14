@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://cdn.discordapp.com; connect-src 'self' https://discord.com; form-action https://discord.com 'self'"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://cdn.discordapp.com; connect-src 'self' https://discord.com https://*.trycloudflare.com; form-action https://discord.com 'self'"
     />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -272,9 +272,10 @@
       const REDIRECT_URI = 'https://rexy40407.github.io/vozen-helper-bot/';
       const SCOPE = 'identify';
 
-      // URL base da API na VPS. Vazio = ainda não ligada (o painel mostra "offline").
-      // Preenche na Fase 5 (deploy) com o URL fixo do túnel/domínio.
-      const API_BASE = '';
+      // URL base da API na VPS (túnel Cloudflare). NOTA: URL efémero — se a VPS/túnel
+      // reiniciar, muda e é preciso atualizar esta linha (o CSP já aceita qualquer
+      // *.trycloudflare.com). Vazio = mostra o painel em modo "offline".
+      const API_BASE = 'https://explained-proud-exhibitions-streaming.trycloudflare.com';
 
       const show = (id) => {
         for (const s of document.querySelectorAll('.status')) s.classList.remove('show');
@@ -403,9 +404,12 @@
             body: JSON.stringify({ token }),
           });
           if (!s.ok) { banner('err', 'A API recusou a sessão (código ' + s.status + ').'); return; }
+          const sj = await s.json();
+          // Token no header Authorization (não depende de cookies de terceiros — Brave/Safari).
+          const auth = { headers: { Authorization: 'Bearer ' + (sj.token || '') }, credentials: 'include' };
           const [stats, casesRes] = await Promise.all([
-            fetch(API_BASE + '/api/stats', { credentials: 'include' }).then((r) => r.json()),
-            fetch(API_BASE + '/api/cases', { credentials: 'include' }).then((r) => r.json()),
+            fetch(API_BASE + '/api/stats', auth).then((r) => r.json()),
+            fetch(API_BASE + '/api/cases', auth).then((r) => r.json()),
           ]);
           renderStats(stats);
           renderCases(casesRes.cases);
