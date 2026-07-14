@@ -169,6 +169,15 @@
       .switch input:checked + .slider { background: var(--grad); }
       .switch input:checked + .slider::before { transform: translateX(20px); }
       .switch input:disabled + .slider { opacity: 0.5; cursor: default; }
+      /* dropdowns de canais */
+      select.chan-select {
+        background: rgba(0,0,0,0.3); color: var(--text-0); border: 1px solid var(--line);
+        border-radius: 10px; padding: 8px 10px; font-family: var(--f-body); font-size: 14px;
+        min-width: 190px; max-width: 55%; cursor: pointer;
+      }
+      select.chan-select:focus { outline: none; border-color: var(--aqua); }
+      select.chan-select:disabled { opacity: 0.5; }
+      select[multiple].chan-select { min-height: 92px; }
       @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } .btn:hover, .toggle-pass:hover { transform: none; } }
     </style>
   </head>
@@ -277,6 +286,11 @@
       <div class="flags" id="flagsBox">
         <div class="empty">—</div>
       </div>
+
+      <div class="section-title">Canais — escolher onde o bot faz cada coisa</div>
+      <div class="flags" id="chansBox">
+        <div class="empty">—</div>
+      </div>
     </section>
 
     <!-- URL da API, mantido atualizado pela VPS (deploy key). Carrega antes do script. -->
@@ -299,6 +313,7 @@
       // qualquer *.trycloudflare.com.
       const API_BASE = (window.API_BASE || '').trim();
       let SESSION = ''; // token de sessão da API (para as escritas: toggles)
+      let CHANNELS = []; // [{id,name}] canais do servidor (para os dropdowns)
 
       const show = (id) => {
         for (const s of document.querySelectorAll('.status')) s.classList.remove('show');
@@ -465,6 +480,99 @@
         }
       }
 
+      function renderChannelSettings(settings) {
+        const box = document.getElementById('chansBox');
+        box.textContent = '';
+        if (!settings || settings.length === 0) {
+          const d = document.createElement('div');
+          d.className = 'empty'; d.textContent = 'Sem definições de canal.';
+          box.appendChild(d);
+          return;
+        }
+        for (const s of settings) {
+          const row = document.createElement('div');
+          row.className = 'flag-row';
+          const left = document.createElement('div');
+          const name = document.createElement('div');
+          name.className = 'flag-name'; name.textContent = s.label;
+          const sub = document.createElement('div');
+          sub.className = 'flag-sub'; sub.textContent = s.key;
+          left.appendChild(name); left.appendChild(sub);
+
+          const sel = document.createElement('select');
+          sel.className = 'chan-select';
+          sel.dataset.key = s.key;
+
+          if (s.kind === 'channel-list') {
+            sel.multiple = true;
+            const chosen = (s.value || '').split(',').filter(Boolean);
+            for (const c of CHANNELS) {
+              const o = document.createElement('option');
+              o.value = c.id; o.textContent = '#' + c.name;
+              if (chosen.includes(c.id)) o.selected = true;
+              sel.appendChild(o);
+            }
+            sel.addEventListener('change', () => {
+              const vals = [...sel.selectedOptions].map((o) => o.value).join(',');
+              saveChannel(s.key, vals, sel);
+            });
+          } else {
+            const def = document.createElement('option');
+            def.value = ''; def.textContent = '— (default) —';
+            sel.appendChild(def);
+            if (s.kind === 'channel-or-current') {
+              const cur = document.createElement('option');
+              cur.value = 'current'; cur.textContent = 'Onde a pessoa falou';
+              sel.appendChild(cur);
+            }
+            for (const c of CHANNELS) {
+              const o = document.createElement('option');
+              o.value = c.id; o.textContent = '#' + c.name;
+              sel.appendChild(o);
+            }
+            sel.value = s.value || '';
+            sel.addEventListener('change', () => saveChannel(s.key, sel.value, sel));
+          }
+          row.appendChild(left); row.appendChild(sel);
+          box.appendChild(row);
+        }
+      }
+
+      async function saveChannel(key, value, sel) {
+        sel.disabled = true;
+        try {
+          const r = await fetch(API_BASE + '/api/channel-settings', {
+            method: 'PATCH', credentials: 'include',
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + SESSION },
+            body: JSON.stringify({ key, value }),
+          });
+          if (!r.ok) throw new Error('patch ' + r.status);
+          const j = await r.json();
+          hideBanner();
+          renderChannelSettings(j.settings);
+        } catch {
+          sel.disabled = false;
+          banner('err', 'Não foi possível guardar o canal.');
+        }
+      }
+
+      async function loadChannels(auth) {
+        try {
+          const [chans, chanSettings] = await Promise.all([
+            fetch(API_BASE + '/api/channels', auth).then((r) => r.json()),
+            fetch(API_BASE + '/api/channel-settings', auth).then((r) => r.json()),
+          ]);
+          CHANNELS = chans.channels || [];
+          renderChannelSettings(chanSettings.settings || []);
+        } catch {
+          const box = document.getElementById('chansBox');
+          box.textContent = '';
+          const d = document.createElement('div');
+          d.className = 'empty'; d.textContent = 'Não foi possível carregar os canais.';
+          box.appendChild(d);
+        }
+      }
+
       async function enterPanel(user, token) {
         showPanel(user);
         if (!API_BASE) {
@@ -491,6 +599,7 @@
           renderStats(stats);
           renderCases(casesRes.cases);
           renderFlags(flagsRes.flags);
+          void loadChannels(auth); // canais em paralelo (não bloqueia o resto)
         } catch {
           banner('err', 'Não foi possível contactar a API na VPS.');
         }
