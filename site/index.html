@@ -66,6 +66,15 @@
       }
       .btn:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(46, 230, 200, 0.4); }
       .btn svg { width: 20px; height: 20px; }
+      .field { text-align: left; margin-bottom: 14px; }
+      .field label { display: block; font-size: 13px; color: var(--text-1); margin-bottom: 6px; font-weight: 500; }
+      .field input {
+        width: 100%; padding: 12px 14px; border-radius: 11px; border: 1px solid var(--line);
+        background: rgba(0, 0, 0, 0.25); color: var(--text-0); font-family: var(--f-body); font-size: 15px;
+      }
+      .field input:focus { outline: none; border-color: var(--aqua); }
+      .err { display: none; color: var(--red); font-size: 13.5px; margin: -4px 0 12px; }
+      .err.show { display: block; }
       .status { display: none; margin-top: 6px; }
       .status.show { display: block; }
       .badge {
@@ -96,10 +105,28 @@
         </svg>
       </div>
 
-      <!-- Estado A — pedir login -->
-      <section id="login" class="status show">
+      <!-- Estado 0 — credenciais (antes do Discord) -->
+      <section id="gate" class="status show">
         <h1>Acesso privado</h1>
-        <p class="sub">Esta área é restrita. Entra com o Discord para continuar.</p>
+        <p class="sub">Introduz as credenciais para continuar.</p>
+        <form id="gateForm" autocomplete="off">
+          <div class="field">
+            <label for="user">Utilizador</label>
+            <input id="user" type="text" autocomplete="username" required />
+          </div>
+          <div class="field">
+            <label for="pass">Password</label>
+            <input id="pass" type="password" autocomplete="current-password" required />
+          </div>
+          <p class="err" id="gateErr">Credenciais inválidas.</p>
+          <button class="btn" type="submit">Continuar</button>
+        </form>
+      </section>
+
+      <!-- Estado A — login Discord -->
+      <section id="login" class="status">
+        <h1>Um passo final</h1>
+        <p class="sub">Confirma a tua identidade com o Discord.</p>
         <button class="btn" id="loginBtn" type="button">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19 19 0 0 0 15.6 3l-.24.48a17.6 17.6 0 0 1 4.16 1.3 15 15 0 0 0-11.06 0A17.6 17.6 0 0 1 12.63 3.5L12.4 3A19 19 0 0 0 7.7 4.4C4.8 8.7 4 13 4.2 17.2A19 19 0 0 0 9.9 20l.4-.6a12 12 0 0 1-1.9-.9c.16-.12.32-.24.47-.37a13.6 13.6 0 0 0 11.6 0c.15.13.3.25.47.37-.6.36-1.24.66-1.9.9l.4.6a19 19 0 0 0 5.7-2.8c.28-4.9-.76-9.16-3.36-12.8ZM9.7 14.7c-1.1 0-2-1-2-2.3 0-1.24.88-2.28 2-2.28s2.02 1.04 2 2.28c0 1.26-.9 2.3-2 2.3Zm4.6 0c-1.1 0-2-1-2-2.3 0-1.24.88-2.28 2-2.28s2.02 1.04 2 2.28c0 1.26-.88 2.3-2 2.3Z" /></svg>
           Entrar com Discord
@@ -132,8 +159,12 @@
     </main>
 
     <script>
-      // ── Portão de login Discord (client-side, OAuth implicit flow) ──────────────
-      // Só a conta ALLOWED entra; qualquer outra vê "conta bloqueada".
+      // ── Acesso em dois passos: (1) credenciais, (2) login Discord ───────────────
+      // NOTA: verificação no browser = cosmética (trava o casual, não é selo real).
+      // Guardam-se só HASHES (SHA-256), não as credenciais em texto.
+      const U_HASH = '5060326c2e0cdc5c11ef1416d6ad912ec3a30185b97f086591a0af2735bb7c1f';
+      const P_HASH = '3700adf1f25fab8202c1343c4b0b4e3fec706d57cad574086467b8b3ddf273ec';
+
       const CLIENT_ID = '1526211106081734666'; // app do Vozen Helper (identify)
       const ALLOWED = '1523489275155583056'; // a tua conta
       const REDIRECT_URI = 'https://rexy40407.github.io/vozen-helper-bot/';
@@ -144,6 +175,25 @@
         document.getElementById(id).classList.add('show');
       };
 
+      async function sha256(s) {
+        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+        return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+      }
+
+      // Passo 1 — credenciais
+      document.getElementById('gateForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const u = await sha256(document.getElementById('user').value.trim().toLowerCase());
+        const p = await sha256(document.getElementById('pass').value);
+        if (u === U_HASH && p === P_HASH) {
+          document.getElementById('gateErr').classList.remove('show');
+          show('login');
+        } else {
+          document.getElementById('gateErr').classList.add('show');
+        }
+      });
+
+      // Passo 2 — Discord
       const authUrl = () =>
         'https://discord.com/api/oauth2/authorize' +
         '?client_id=' + encodeURIComponent(CLIENT_ID) +
@@ -163,10 +213,9 @@
       async function handleReturn() {
         const hash = new URLSearchParams(window.location.hash.slice(1));
         const token = hash.get('access_token');
-        if (!token) { show('login'); return; }
+        if (!token) { show('gate'); return; } // sem token → começa pelas credenciais
 
-        // limpa o token do URL (não fica no histórico/partilha)
-        history.replaceState(null, '', REDIRECT_URI);
+        history.replaceState(null, '', REDIRECT_URI); // limpa o token do URL
         show('loading');
 
         try {
