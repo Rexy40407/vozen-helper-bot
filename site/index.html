@@ -4,311 +4,190 @@
     <meta charset="UTF-8" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://cdn.discordapp.com; connect-src 'self'; media-src 'self'; form-action 'self'"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://cdn.discordapp.com; connect-src 'self' https://discord.com; form-action https://discord.com 'self'"
     />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#05060f" />
-    <title>Vozen Helper — Moderação e comunidade num só bot de Discord</title>
-    <meta
-      name="description"
-      content="Vozen Helper protege e anima o teu servidor de Discord: anti-spam, anti-raid, anti-nuke, anti-scam, AutoMod, níveis, sugestões, tickets, giveaways e mais."
-    />
-
-    <meta property="og:site_name" content="Vozen Helper" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="Vozen Helper — Moderação e comunidade num só bot" />
-    <meta
-      property="og:description"
-      content="Anti-spam, anti-raid, anti-nuke, anti-scam, AutoMod, níveis, sugestões, tickets e giveaways. Um bot para proteger e animar o teu servidor."
-    />
-
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Vozen Helper — Acesso privado</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=Outfit:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="css/styles.css" />
+    <style>
+      :root {
+        --bg-0: #05060f;
+        --panel: rgba(22, 25, 41, 0.72);
+        --line: rgba(255, 255, 255, 0.1);
+        --blurple: #6672ff;
+        --aqua: #2ee6c8;
+        --red: #ff5c72;
+        --grad: linear-gradient(115deg, #6672ff 0%, #2ee6c8 100%);
+        --text-0: #f6f7fe;
+        --text-1: #a3a9c4;
+        --f-display: "Unbounded", system-ui, sans-serif;
+        --f-body: "Outfit", system-ui, sans-serif;
+        --f-mono: "JetBrains Mono", ui-monospace, monospace;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px;
+        font-family: var(--f-body); color: var(--text-1); background-color: var(--bg-0);
+        background-image:
+          radial-gradient(120% 85% at 12% -12%, rgba(102, 114, 255, 0.24), transparent 52%),
+          radial-gradient(110% 75% at 92% 2%, rgba(46, 230, 200, 0.16), transparent 50%);
+        background-attachment: fixed; -webkit-font-smoothing: antialiased;
+      }
+      .card {
+        width: 100%; max-width: 420px; text-align: center;
+        background: var(--panel); border: 1px solid var(--line); border-radius: 22px;
+        padding: 42px 34px; backdrop-filter: blur(14px);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+      }
+      .mark {
+        width: 60px; height: 60px; margin: 0 auto 22px; border-radius: 16px;
+        display: grid; place-items: center; background: var(--grad);
+        box-shadow: 0 10px 30px rgba(102, 114, 255, 0.4);
+      }
+      .mark svg { width: 34px; height: 34px; }
+      h1 { font-family: var(--f-display); font-size: 24px; font-weight: 800; color: var(--text-0); margin: 0 0 8px; letter-spacing: -0.02em; }
+      .sub { font-size: 15px; color: var(--text-1); margin: 0 0 28px; line-height: 1.55; }
+      .btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+        width: 100%; padding: 14px 20px; border: none; border-radius: 13px; cursor: pointer;
+        font-family: var(--f-body); font-weight: 600; font-size: 15.5px;
+        background: var(--grad); color: #06070e;
+        box-shadow: 0 10px 30px rgba(102, 114, 255, 0.35);
+        transition: transform 0.16s ease, box-shadow 0.16s ease; text-decoration: none;
+      }
+      .btn:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(46, 230, 200, 0.4); }
+      .btn svg { width: 20px; height: 20px; }
+      .status { display: none; margin-top: 6px; }
+      .status.show { display: block; }
+      .badge {
+        display: inline-flex; align-items: center; gap: 9px; padding: 9px 18px; border-radius: 999px;
+        font-family: var(--f-mono); font-size: 13.5px; font-weight: 700; letter-spacing: 0.02em; margin-bottom: 18px;
+      }
+      .badge--ok { color: var(--aqua); background: rgba(46, 230, 200, 0.12); border: 1px solid rgba(46, 230, 200, 0.35); }
+      .badge--bad { color: var(--red); background: rgba(255, 92, 114, 0.12); border: 1px solid rgba(255, 92, 114, 0.35); }
+      .who { font-size: 14px; color: var(--text-1); margin-top: 4px; }
+      .who b { color: var(--text-0); }
+      .retry { display: inline-block; margin-top: 22px; font-size: 13.5px; color: var(--text-1); text-decoration: underline; cursor: pointer; }
+      .foot { margin-top: 26px; font-family: var(--f-mono); font-size: 11.5px; color: rgba(163, 169, 196, 0.5); }
+      .spinner {
+        width: 26px; height: 26px; margin: 6px auto 0; border-radius: 50%;
+        border: 3px solid rgba(255, 255, 255, 0.15); border-top-color: var(--aqua);
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } .btn:hover { transform: none; } }
+    </style>
   </head>
   <body>
-    <div class="orbs" aria-hidden="true">
-      <span class="orb orb--blurple"></span>
-      <span class="orb orb--aqua"></span>
-    </div>
-
-    <a class="skip-link" href="#hero">Ir para o conteúdo</a>
-
-    <!-- ─────────────── NAVBAR ─────────────── -->
-    <header class="nav">
-      <div class="wrap nav__inner">
-        <a class="brand" href="#hero" aria-label="Vozen Helper — início">
-          <span class="brand__mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#06070e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 3l7 3v5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6z" />
-              <path d="M9 12l2 2 4-4" />
-            </svg>
-          </span>
-          <span class="brand__word">Vozen <b>Helper</b></span>
-        </a>
-
-        <nav class="nav__links" aria-label="Principal">
-          <a href="#moderacao">Moderação</a>
-          <a href="#comunidade">Comunidade</a>
-          <a href="#setup">Como funciona</a>
-        </nav>
-
-        <div class="nav__actions">
-          <!-- Convite OAuth real do Vozen Helper (bot + applications.commands). -->
-          <a
-            class="btn btn--primary btn--sm"
-            href="https://discord.com/oauth2/authorize?client_id=1526211106081734666&permissions=1100518354102&integration_type=0&scope=bot+applications.commands"
-            target="_blank"
-            rel="noopener"
-          >Adicionar ao servidor</a>
-        </div>
+    <main class="card">
+      <div class="mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#06070e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3l7 3v5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6z" />
+          <path d="M9 12l2 2 4-4" />
+        </svg>
       </div>
-    </header>
 
-    <main>
-      <!-- ─────────────── HERO ─────────────── -->
-      <section class="hero" id="hero">
-        <div class="wrap hero__inner">
-          <span class="pill">
-            <span class="pill__dot"></span>
-            Privado · um servidor · sempre online
-          </span>
-          <h1 class="hero__title">
-            Moderação e comunidade,<br />
-            <span class="grad">num só bot.</span>
-          </h1>
-          <p class="hero__sub">
-            O Vozen Helper protege o teu servidor de Discord contra spam, raids, nukes e
-            scams — e ainda o anima com níveis, sugestões, tickets e giveaways. Configura-se
-            em minutos e trabalha 24/7.
-          </p>
-          <div class="hero__cta">
-            <a
-              class="btn btn--primary btn--lg"
-              href="https://discord.com/oauth2/authorize?client_id=1526211106081734666&permissions=1100518354102&integration_type=0&scope=bot+applications.commands"
-              target="_blank"
-              rel="noopener"
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19 19 0 0 0 15.6 3l-.24.48a17.6 17.6 0 0 1 4.16 1.3 15 15 0 0 0-11.06 0A17.6 17.6 0 0 1 12.63 3.5L12.4 3A19 19 0 0 0 7.7 4.4C4.8 8.7 4 13 4.2 17.2A19 19 0 0 0 9.9 20l.4-.6a12 12 0 0 1-1.9-.9c.16-.12.32-.24.47-.37a13.6 13.6 0 0 0 11.6 0c.15.13.3.25.47.37-.6.36-1.24.66-1.9.9l.4.6a19 19 0 0 0 5.7-2.8c.28-4.9-.76-9.16-3.36-12.8ZM9.7 14.7c-1.1 0-2-1-2-2.3 0-1.24.88-2.28 2-2.28s2.02 1.04 2 2.28c0 1.26-.9 2.3-2 2.3Zm4.6 0c-1.1 0-2-1-2-2.3 0-1.24.88-2.28 2-2.28s2.02 1.04 2 2.28c0 1.26-.88 2.3-2 2.3Z" /></svg>
-              Adicionar ao servidor
-            </a>
-            <a class="btn btn--ghost btn--lg" href="#moderacao">Ver o que faz</a>
-          </div>
-          <p class="hero__mini">Anti-spam · Anti-raid · Anti-nuke · Anti-scam · Níveis · Tickets · Giveaways</p>
-        </div>
+      <!-- Estado A — pedir login -->
+      <section id="login" class="status show">
+        <h1>Acesso privado</h1>
+        <p class="sub">Esta área é restrita. Entra com o Discord para continuar.</p>
+        <button class="btn" id="loginBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19 19 0 0 0 15.6 3l-.24.48a17.6 17.6 0 0 1 4.16 1.3 15 15 0 0 0-11.06 0A17.6 17.6 0 0 1 12.63 3.5L12.4 3A19 19 0 0 0 7.7 4.4C4.8 8.7 4 13 4.2 17.2A19 19 0 0 0 9.9 20l.4-.6a12 12 0 0 1-1.9-.9c.16-.12.32-.24.47-.37a13.6 13.6 0 0 0 11.6 0c.15.13.3.25.47.37-.6.36-1.24.66-1.9.9l.4.6a19 19 0 0 0 5.7-2.8c.28-4.9-.76-9.16-3.36-12.8ZM9.7 14.7c-1.1 0-2-1-2-2.3 0-1.24.88-2.28 2-2.28s2.02 1.04 2 2.28c0 1.26-.9 2.3-2 2.3Zm4.6 0c-1.1 0-2-1-2-2.3 0-1.24.88-2.28 2-2.28s2.02 1.04 2 2.28c0 1.26-.88 2.3-2 2.3Z" /></svg>
+          Entrar com Discord
+        </button>
       </section>
 
-      <!-- ─────────────── MODERAÇÃO ─────────────── -->
-      <section class="section" id="moderacao">
-        <div class="wrap">
-          <header class="head">
-            <span class="eyebrow">Moderação</span>
-            <h2>Proteção que nunca dorme</h2>
-            <p>Sete camadas de defesa que agem antes de tu sequer veres o problema.</p>
-          </header>
-
-          <div class="cards">
-            <article class="card">
-              <span class="card__ic">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" /></svg>
-              </span>
-              <h3>Anti-spam por calor</h3>
-              <p>Um sistema de "heat" mede o ritmo, repetições e menções de cada membro e trava floods automaticamente, com escalação progressiva.</p>
-            </article>
-
-            <article class="card">
-              <span class="card__ic card__ic--aqua">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l8 4v5c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V7z" /><path d="M12 8v5" /><circle cx="12" cy="16" r="0.6" fill="currentColor" /></svg>
-              </span>
-              <h3>Anti-raid & join gate</h3>
-              <p>Deteta ondas de entradas coordenadas e ativa um portão de verificação, segurando contas novas ou suspeitas antes de chegarem ao chat.</p>
-            </article>
-
-            <article class="card">
-              <span class="card__ic card__ic--amber">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2l7 3v6c0 4-3 7.5-7 9-4-1.5-7-5-7-9V5z" /><path d="M9.5 12l1.8 1.8L15 10" /></svg>
-              </span>
-              <h3>Anti-nuke com quarentena</h3>
-              <p>Vigia o audit log em tempo real: bans em massa, apagões de canais ou cargos disparam quarentena imediata do responsável e alerta ao dono.</p>
-            </article>
-
-            <article class="card">
-              <span class="card__ic">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 15.5v.5" /></svg>
-              </span>
-              <h3>Anti-scam & phishing</h3>
-              <p>Bloqueia links de phishing, domínios falsos de Nitro/Steam e golpes conhecidos antes que alguém clique.</p>
-            </article>
-
-            <article class="card">
-              <span class="card__ic card__ic--aqua">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="4" width="16" height="16" rx="4" /><path d="M8 12h8M8 8.5h5M8 15.5h6" /></svg>
-              </span>
-              <h3>AutoMod & filtros</h3>
-              <p>Regras nativas do Discord AutoMod geridas pelo bot, mais filtros próprios de palavras, racismo e conteúdo proibido.</p>
-            </article>
-
-            <article class="card">
-              <span class="card__ic">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 3h10l2 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7z" /><path d="M9 12h6M9 15h4" /></svg>
-              </span>
-              <h3>Casos & escalação</h3>
-              <p>Cada aviso, mute, kick ou ban vira um caso registado, com sanções que escalam sozinhas e expiram no tempo certo.</p>
-            </article>
-
-            <article class="card">
-              <span class="card__ic card__ic--amber">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5h16v11H7l-3 3z" /><path d="M8 9h8M8 12h5" /></svg>
-              </span>
-              <h3>Logging completo</h3>
-              <p>Entradas, saídas, edições, apagões, ações de moderação — tudo registado num canal, para nunca perderes o rasto do que aconteceu.</p>
-            </article>
-          </div>
-        </div>
+      <!-- Estado B — a verificar -->
+      <section id="loading" class="status">
+        <h1>A verificar…</h1>
+        <p class="sub">Um instante, a confirmar a tua conta.</p>
+        <div class="spinner" aria-hidden="true"></div>
       </section>
 
-      <!-- ─────────────── COMUNIDADE ─────────────── -->
-      <section class="section section--alt" id="comunidade">
-        <div class="wrap">
-          <header class="head">
-            <span class="eyebrow eyebrow--amber">Comunidade</span>
-            <h2>Um servidor que dá vontade de ficar</h2>
-            <p>Envolvimento, recompensas e ferramentas de apoio — do mesmo bot.</p>
-          </header>
-
-          <div class="cards">
-            <article class="card">
-              <span class="card__ic card__ic--amber">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 19V9M10 19V4M16 19v-7M22 19H2" /></svg>
-              </span>
-              <h3>Níveis & XP</h3>
-              <p>Membros ganham XP ao participar e sobem de nível, com cargos de recompensa automáticos a marcos que tu defines.</p>
-            </article>
-
-            <article class="card">
-              <span class="card__ic card__ic--aqua">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 10l3-6 3 6M5 12l-2 5 4-1M19 12l2 5-4-1M12 13v7" /></svg>
-              </span>
-              <h3>Sugestões com votos</h3>
-              <p>Um canal onde a comunidade propõe ideias e vota. A staff aprova ou recusa com um clique.</p>
-            </article>
-
-            <article class="card">
-              <span class="card__ic">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z" /></svg>
-              </span>
-              <h3>Tickets de apoio</h3>
-              <p>Threads privadas de suporte, geridas pela staff, com transcrição guardada ao fechar.</p>
-            </article>
-
-            <article class="card">
-              <span class="card__ic card__ic--amber">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 8h16v3H4zM5 11v9h14v-9M12 8v12M12 8S9 3 6.5 5 9 8 12 8zM12 8s3-5 5.5-3S15 8 12 8z" /></svg>
-              </span>
-              <h3>Giveaways</h3>
-              <p>Sorteios com fim automático, requisitos de cargo e reroll — do início ao vencedor sem tocares em nada.</p>
-            </article>
-
-            <article class="card">
-              <span class="card__ic card__ic--aqua">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4" /><path d="M4 20a8 8 0 0 1 16 0" /></svg>
-              </span>
-              <h3>Self-roles</h3>
-              <p>Painéis de botões para os membros escolherem os próprios cargos, sempre dentro da hierarquia certa.</p>
-            </article>
-
-            <article class="card">
-              <span class="card__ic card__ic--amber">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z" /></svg>
-              </span>
-              <h3>Starboard</h3>
-              <p>As melhores mensagens, votadas com ⭐, ganham lugar num quadro de honra do servidor.</p>
-            </article>
-
-            <article class="card">
-              <span class="card__ic">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 19V5M4 19h16M8 16v-4M12 16V8M16 16v-6" /></svg>
-              </span>
-              <h3>/serverstats</h3>
-              <p>Estatísticas do servidor à mão: mensagens, entradas e saídas, num relance.</p>
-            </article>
-          </div>
-        </div>
+      <!-- Estado C — autorizado -->
+      <section id="ok" class="status">
+        <span class="badge badge--ok">✓ ACESSO AUTORIZADO</span>
+        <h1>Bem-vindo.</h1>
+        <p class="who">Sessão iniciada como <b id="okName">tu</b>.</p>
       </section>
 
-      <!-- ─────────────── SETUP ─────────────── -->
-      <section class="section" id="setup">
-        <div class="wrap">
-          <header class="head">
-            <span class="eyebrow">Como funciona</span>
-            <h2>A funcionar em minutos</h2>
-          </header>
-          <div class="steps">
-            <div class="step">
-              <span class="step__n">1</span>
-              <h3>Convida</h3>
-              <p>Adiciona o Vozen Helper ao teu servidor com um clique.</p>
-            </div>
-            <div class="step">
-              <span class="step__n">2</span>
-              <h3>Cargo no topo</h3>
-              <p>Coloca o cargo do bot <b>acima</b> dos moderadores, para ele poder agir sobre eles.</p>
-            </div>
-            <div class="step">
-              <span class="step__n">3</span>
-              <h3>Pronto</h3>
-              <p>Defaults sensatos entram logo em ação. Ajusta o resto quando quiseres.</p>
-            </div>
-          </div>
-        </div>
+      <!-- Estado D — bloqueado -->
+      <section id="blocked" class="status">
+        <span class="badge badge--bad">✕ CONTA BLOQUEADA</span>
+        <h1>Sem acesso.</h1>
+        <p class="sub">Esta conta não está autorizada a ver esta área.</p>
+        <span class="retry" id="retryBtn">Entrar com outra conta</span>
       </section>
 
-      <!-- ─────────────── CTA FINAL ─────────────── -->
-      <section class="finale">
-        <div class="wrap">
-          <h2>Dá ao teu servidor um guarda-costas.</h2>
-          <a
-            class="btn btn--primary btn--lg"
-            href="https://discord.com/oauth2/authorize?client_id=1526211106081734666&permissions=1100518354102&integration_type=0&scope=bot+applications.commands"
-            target="_blank"
-            rel="noopener"
-          >Adicionar ao servidor</a>
-          <p class="finale__note">Privado · sempre online · configuração em minutos</p>
-        </div>
-      </section>
+      <p class="foot">Vozen Helper · acesso restrito</p>
     </main>
 
-    <!-- ─────────────── FOOTER ─────────────── -->
-    <footer class="foot">
-      <div class="wrap">
-        <div class="foot__grid">
-          <div>
-            <a class="brand" href="#hero" aria-label="Vozen Helper — início">
-              <span class="brand__mark" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#06070e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 3l7 3v5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6z" />
-                  <path d="M9 12l2 2 4-4" />
-                </svg>
-              </span>
-              <span class="brand__word">Vozen <b>Helper</b></span>
-            </a>
-            <p class="foot__tag">Protege. Modera. Anima.</p>
-          </div>
-          <span class="foot__legal">
-            <a href="privacy.html">Privacidade</a>
-            <a href="terms.html">Termos</a>
-          </span>
-        </div>
-        <div class="foot__base">
-          © 2026 Vozen Helper · Sem afiliação com a Discord Inc.
-        </div>
-      </div>
-    </footer>
+    <script>
+      // ── Portão de login Discord (client-side, OAuth implicit flow) ──────────────
+      // Só a conta ALLOWED entra; qualquer outra vê "conta bloqueada".
+      const CLIENT_ID = '1526211106081734666'; // app do Vozen Helper (identify)
+      const ALLOWED = '1523489275155583056'; // a tua conta
+      const REDIRECT_URI = 'https://rexy40407.github.io/vozen-helper-bot/';
+      const SCOPE = 'identify';
+
+      const show = (id) => {
+        for (const s of document.querySelectorAll('.status')) s.classList.remove('show');
+        document.getElementById(id).classList.add('show');
+      };
+
+      const authUrl = () =>
+        'https://discord.com/api/oauth2/authorize' +
+        '?client_id=' + encodeURIComponent(CLIENT_ID) +
+        '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
+        '&response_type=token' +
+        '&scope=' + encodeURIComponent(SCOPE) +
+        '&prompt=consent';
+
+      document.getElementById('loginBtn').addEventListener('click', () => {
+        window.location.href = authUrl();
+      });
+      document.getElementById('retryBtn').addEventListener('click', () => {
+        window.location.href = authUrl();
+      });
+
+      // Ao voltar do Discord, o token vem no fragmento (#access_token=...).
+      async function handleReturn() {
+        const hash = new URLSearchParams(window.location.hash.slice(1));
+        const token = hash.get('access_token');
+        if (!token) { show('login'); return; }
+
+        // limpa o token do URL (não fica no histórico/partilha)
+        history.replaceState(null, '', REDIRECT_URI);
+        show('loading');
+
+        try {
+          const res = await fetch('https://discord.com/api/users/@me', {
+            headers: { Authorization: 'Bearer ' + token },
+          });
+          if (!res.ok) throw new Error('me failed');
+          const user = await res.json();
+          if (user.id === ALLOWED) {
+            document.getElementById('okName').textContent =
+              user.global_name || user.username || 'tu';
+            show('ok');
+          } else {
+            show('blocked');
+          }
+        } catch {
+          show('blocked');
+        }
+      }
+
+      handleReturn();
+    </script>
   </body>
 </html>
