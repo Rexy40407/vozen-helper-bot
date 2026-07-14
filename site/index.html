@@ -156,28 +156,75 @@
       .mono { font-family: var(--f-mono); font-size: 12.5px; color: var(--text-2); }
       .empty { padding: 26px 16px; text-align: center; color: var(--text-2); font-size: 14px; }
 
-      /* toggles de definições */
-      .flags { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
-      .flag-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-      .flag-row:last-child { border-bottom: none; }
-      .flag-name { font-size: 15px; color: var(--text-0); font-weight: 500; }
-      .flag-sub { font-size: 11.5px; color: var(--text-2); font-family: var(--f-mono); margin-top: 2px; }
+      /* ── grupos de definições ─────────────────────────────── */
+      .group { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin-bottom: 16px; }
+      .group-head { font-family: var(--f-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--aqua); padding: 15px 18px 4px; }
+      .group.mod .group-head { color: var(--blurple-2, #9aa4ff); }
+      .set-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 18px; border-top: 1px solid rgba(255,255,255,0.05); }
+      .set-row:first-of-type { border-top: none; }
+      .lbl { display: flex; align-items: center; gap: 9px; min-width: 0; }
+      .set-name { font-size: 15px; color: var(--text-0); font-weight: 500; }
+      .set-sub { font-size: 11.5px; color: var(--text-2); font-family: var(--f-mono); margin-top: 2px; }
+      .pending-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 8px var(--amber); flex: none; visibility: hidden; }
+      .set-row.pending .pending-dot, .sub-row.pending .pending-dot { visibility: visible; }
+      .sub-rows { padding: 2px 18px 10px 18px; }
+      .sub-rows.dimmed { opacity: 0.4; }
+      .sub-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 0; }
+      .sub-row .set-name { font-size: 13.5px; color: var(--text-1); }
+
+      /* toggle */
       .switch { position: relative; width: 46px; height: 26px; flex: none; }
       .switch input { opacity: 0; width: 0; height: 0; }
       .slider { position: absolute; inset: 0; background: rgba(255,255,255,0.14); border-radius: 999px; cursor: pointer; transition: background 0.16s; }
       .slider::before { content: ''; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform 0.16s; }
       .switch input:checked + .slider { background: var(--grad); }
       .switch input:checked + .slider::before { transform: translateX(20px); }
-      .switch input:disabled + .slider { opacity: 0.5; cursor: default; }
-      /* dropdowns de canais */
-      select.chan-select {
-        background: rgba(0,0,0,0.3); color: var(--text-0); border: 1px solid var(--line);
-        border-radius: 10px; padding: 8px 10px; font-family: var(--f-body); font-size: 14px;
-        min-width: 190px; max-width: 55%; cursor: pointer;
+      .switch input:focus-visible + .slider { outline: 2px solid var(--aqua); outline-offset: 2px; }
+
+      /* chips (multi-seleção) */
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; max-width: 62%; justify-content: flex-end; }
+      .chip { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: rgba(0,0,0,0.25); color: var(--text-1); font-size: 13px; cursor: pointer; transition: background 0.14s, border-color 0.14s, color 0.14s; user-select: none; }
+      .chip:hover { border-color: rgba(255,255,255,0.24); color: var(--text-0); }
+      .chip.on { background: rgba(46,230,200,0.14); border-color: var(--aqua); color: var(--aqua); }
+      .chip:focus-visible { outline: 2px solid var(--aqua); outline-offset: 2px; }
+
+      /* dropdown custom */
+      .dd { position: relative; min-width: 200px; max-width: 58%; }
+      .dd-btn { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; background: rgba(0,0,0,0.3); color: var(--text-0); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; font-family: var(--f-body); font-size: 14px; cursor: pointer; text-align: left; }
+      .dd-btn:hover { border-color: rgba(255,255,255,0.24); }
+      .dd-btn:focus-visible { outline: none; border-color: var(--aqua); }
+      .dd-btn .chev { flex: none; opacity: 0.6; transition: transform 0.16s; }
+      .dd.open .dd-btn .chev { transform: rotate(180deg); }
+      .dd-panel { display: none; position: absolute; top: calc(100% + 6px); right: 0; left: 0; z-index: 30; background: #10121f; border: 1px solid var(--line-2, rgba(255,255,255,0.16)); border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); overflow: hidden; }
+      .dd.open .dd-panel { display: block; }
+      .dd-search { width: 100%; border: none; border-bottom: 1px solid var(--line); background: transparent; color: var(--text-0); padding: 10px 12px; font-family: var(--f-body); font-size: 14px; }
+      .dd-search:focus { outline: none; }
+      .dd-list { max-height: 220px; overflow-y: auto; }
+      .dd-opt { padding: 9px 12px; font-size: 14px; color: var(--text-1); cursor: pointer; }
+      .dd-opt:hover, .dd-opt.hl { background: rgba(102,114,255,0.16); color: var(--text-0); }
+      .dd-opt.sel { color: var(--aqua); }
+      .dd-empty { padding: 12px; text-align: center; color: var(--text-2); font-size: 13px; }
+
+      /* barra de guardar (fixa) */
+      .savebar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; padding: 0 22px; transform: translateY(130%); transition: transform 0.22s ease; }
+      .savebar.show { transform: translateY(0); }
+      .savebar-inner { max-width: 1080px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 13px 20px; background: rgba(20, 23, 38, 0.94); border: 1px solid var(--line-2, rgba(255,255,255,0.16)); border-radius: 14px; backdrop-filter: blur(14px); box-shadow: 0 20px 50px rgba(0,0,0,0.55); }
+      .savebar-msg { font-size: 14px; color: var(--text-0); font-weight: 500; }
+      .savebar.ok .savebar-inner { border-color: var(--aqua); }
+      .savebar-actions { display: flex; gap: 10px; flex: none; }
+      .sb-discard { background: transparent; border: 1px solid var(--line); color: var(--text-1); padding: 10px 16px; border-radius: 11px; cursor: pointer; font-family: var(--f-body); font-size: 14px; }
+      .sb-discard:hover { border-color: var(--red); color: var(--red); }
+      .sb-save { background: var(--grad); border: none; color: #06070e; padding: 10px 18px; border-radius: 11px; cursor: pointer; font-family: var(--f-body); font-weight: 600; font-size: 14px; }
+      .sb-save:disabled { opacity: 0.6; cursor: default; }
+
+      @media (max-width: 720px) {
+        .set-row { flex-direction: column; align-items: stretch; }
+        .lbl { justify-content: space-between; }
+        .chips, .dd { max-width: 100%; }
+        .chips { justify-content: flex-start; }
+        .savebar-inner { flex-direction: column; align-items: stretch; }
+        .savebar-actions { justify-content: flex-end; }
       }
-      select.chan-select:focus { outline: none; border-color: var(--aqua); }
-      select.chan-select:disabled { opacity: 0.5; }
-      select[multiple].chan-select { min-height: 92px; }
       @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } .btn:hover, .toggle-pass:hover { transform: none; } }
     </style>
   </head>
@@ -282,16 +329,22 @@
         </table>
       </div>
 
-      <div class="section-title">Definições — ligar/desligar subsistemas</div>
-      <div class="flags" id="flagsBox">
-        <div class="empty">—</div>
-      </div>
-
-      <div class="section-title">Canais — escolher onde o bot faz cada coisa</div>
-      <div class="flags" id="chansBox">
+      <div class="section-title">Definições</div>
+      <div id="settingsBox">
         <div class="empty">—</div>
       </div>
     </section>
+
+    <!-- barra de guardar (aparece quando há alterações pendentes) -->
+    <div class="savebar" id="saveBar" aria-hidden="true">
+      <div class="savebar-inner">
+        <span class="savebar-msg" id="saveMsg">Alterações por guardar</span>
+        <div class="savebar-actions">
+          <button class="sb-discard" id="btnDiscard" type="button">Descartar</button>
+          <button class="sb-save" id="btnSave" type="button">Guardar alterações</button>
+        </div>
+      </div>
+    </div>
 
     <!-- URL da API, mantido atualizado pela VPS (deploy key). Carrega antes do script. -->
     <script src="api-url.js"></script>
@@ -428,148 +481,257 @@
         }
       }
 
-      function renderFlags(flags) {
-        const box = document.getElementById('flagsBox');
-        box.textContent = '';
-        if (!flags || flags.length === 0) {
-          const d = document.createElement('div');
-          d.className = 'empty'; d.textContent = 'Sem subsistemas.';
-          box.appendChild(d);
-          return;
-        }
-        for (const f of flags) {
-          const row = document.createElement('div');
-          row.className = 'flag-row';
-          const left = document.createElement('div');
-          const name = document.createElement('div');
-          name.className = 'flag-name'; name.textContent = f.label;
-          const sub = document.createElement('div');
-          sub.className = 'flag-sub';
-          sub.textContent = f.key + (f.enabled === f.default ? '' : ' · alterado do default');
-          left.appendChild(name); left.appendChild(sub);
-          const sw = document.createElement('label');
-          sw.className = 'switch';
-          const inp = document.createElement('input');
-          inp.type = 'checkbox'; inp.checked = !!f.enabled; inp.dataset.key = f.key;
-          const sl = document.createElement('span'); sl.className = 'slider';
-          sw.appendChild(inp); sw.appendChild(sl);
-          inp.addEventListener('change', () => toggleFlag(inp));
-          row.appendChild(left); row.appendChild(sw);
-          box.appendChild(row);
-        }
+      // ── Estado das definições (modelo "pendente + Guardar") ─────────────────────
+      const SRV = { flags: {}, chans: {} }; // verdade do servidor
+      let FLAGS_META = {}; // key -> { label, default }
+      let CHAN_META = {}; // key -> { label, kind }
+      const PENDING = new Map(); // 'flag:<k>'|'chan:<k>' -> novo valor (bool|string)
+
+      const MOD_FLAGS = ['antispam', 'antiscam', 'antinuke', 'joingate', 'raid'];
+      const COM_FLAGS = ['leveling', 'starboard', 'suggestions', 'tickets', 'bumpreminder'];
+      const FEATURE_CHANS = {
+        leveling: ['chan.levelup', 'xp.exclude'],
+        starboard: ['chan.starboard'],
+        suggestions: ['chan.suggestions'],
+      };
+      const MOD_CHANS = ['chan.log'];
+
+      const el = (tag, cls) => { const e = document.createElement(tag); if (cls) e.className = cls; return e; };
+
+      // Limpa nomes decorados (₊˚ʚ💎୧﹕joins -> joins). Fallback ao original se vazio.
+      function cleanChannelName(name) {
+        const s = (name || '')
+          .replace(/[^A-Za-z0-9À-ÿ _-]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+        return s || name || 'canal';
       }
 
-      async function toggleFlag(inp) {
-        const key = inp.dataset.key;
-        const enabled = inp.checked;
-        inp.disabled = true;
-        try {
-          const r = await fetch(API_BASE + '/api/flags', {
-            method: 'PATCH', credentials: 'include',
-            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + SESSION },
-            body: JSON.stringify({ key, enabled }),
+      const effFlag = (k) => (PENDING.has('flag:' + k) ? PENDING.get('flag:' + k) : SRV.flags[k]);
+      const effChan = (k) => (PENDING.has('chan:' + k) ? PENDING.get('chan:' + k) : (SRV.chans[k] ?? ''));
+      const isFlagPending = (k) => PENDING.has('flag:' + k);
+      const isChanPending = (k) => PENDING.has('chan:' + k);
+
+      function setPendingFlag(k, val) {
+        const pk = 'flag:' + k;
+        if (val === SRV.flags[k]) PENDING.delete(pk); else PENDING.set(pk, val);
+        afterChange();
+      }
+      function setPendingChan(k, val) {
+        const pk = 'chan:' + k;
+        if (val === (SRV.chans[k] ?? '')) PENDING.delete(pk); else PENDING.set(pk, val);
+        afterChange();
+      }
+      function afterChange() { renderSettings(); updateSaveBar(); }
+
+      function labelForChanValue(value) {
+        if (!value) return '— (padrão) —';
+        if (value === 'current') return 'Onde a pessoa falou';
+        const c = CHANNELS.find((x) => x.id === value);
+        return c ? '#' + c.clean : '(canal removido)';
+      }
+
+      // Dropdown custom com pesquisa + teclado.
+      function buildDropdown(key, meta) {
+        const cur = effChan(key);
+        const dd = el('div', 'dd');
+        const btn = el('button', 'dd-btn'); btn.type = 'button';
+        const lab = el('span'); lab.textContent = labelForChanValue(cur);
+        const chev = el('span', 'chev'); chev.textContent = '▾';
+        btn.appendChild(lab); btn.appendChild(chev);
+        const panel = el('div', 'dd-panel');
+        const search = el('input', 'dd-search'); search.type = 'text'; search.placeholder = 'Procurar canal…';
+        const list = el('div', 'dd-list');
+        panel.appendChild(search); panel.appendChild(list);
+        dd.appendChild(btn); dd.appendChild(panel);
+
+        const opts = [{ value: '', text: '— (padrão) —' }];
+        if (meta.kind === 'channel-or-current') opts.push({ value: 'current', text: 'Onde a pessoa falou' });
+        for (const c of CHANNELS) opts.push({ value: c.id, text: '#' + c.clean });
+
+        let hl = 0;
+        function draw(filter) {
+          list.textContent = '';
+          const f = (filter || '').toLowerCase();
+          const m = opts.filter((o) => o.text.toLowerCase().includes(f));
+          if (hl >= m.length) hl = m.length - 1;
+          if (hl < 0) hl = 0;
+          if (!m.length) { const e = el('div', 'dd-empty'); e.textContent = 'Sem resultados'; list.appendChild(e); return; }
+          m.forEach((o, i) => {
+            const it = el('div', 'dd-opt'); it.textContent = o.text; it.dataset.value = o.value;
+            if (o.value === cur) it.classList.add('sel');
+            if (i === hl) it.classList.add('hl');
+            it.addEventListener('mousedown', (ev) => { ev.preventDefault(); choose(o.value); });
+            list.appendChild(it);
           });
-          if (!r.ok) throw new Error('patch ' + r.status);
-          const j = await r.json();
-          hideBanner();
-          renderFlags(j.flags); // re-render com a verdade do servidor
-        } catch {
-          inp.checked = !enabled; // reverte
-          inp.disabled = false;
-          banner('err', 'Não foi possível guardar a alteração.');
         }
+        const outside = (ev) => { if (!dd.contains(ev.target)) close(); };
+        function open() { dd.classList.add('open'); hl = 0; draw(''); search.value = ''; search.focus(); document.addEventListener('mousedown', outside); }
+        function close() { dd.classList.remove('open'); document.removeEventListener('mousedown', outside); }
+        function choose(v) { close(); setPendingChan(key, v); }
+        btn.addEventListener('click', () => { dd.classList.contains('open') ? close() : open(); });
+        search.addEventListener('input', () => { hl = 0; draw(search.value); });
+        search.addEventListener('keydown', (ev) => {
+          const items = [...list.querySelectorAll('.dd-opt')];
+          if (ev.key === 'ArrowDown') { ev.preventDefault(); hl = Math.min(hl + 1, items.length - 1); draw(search.value); }
+          else if (ev.key === 'ArrowUp') { ev.preventDefault(); hl = Math.max(hl - 1, 0); draw(search.value); }
+          else if (ev.key === 'Enter') { ev.preventDefault(); const it = items[hl]; if (it) choose(it.dataset.value); }
+          else if (ev.key === 'Escape') { ev.preventDefault(); close(); btn.focus(); }
+        });
+        return dd;
       }
 
-      function renderChannelSettings(settings) {
-        const box = document.getElementById('chansBox');
-        box.textContent = '';
-        if (!settings || settings.length === 0) {
-          const d = document.createElement('div');
-          d.className = 'empty'; d.textContent = 'Sem definições de canal.';
-          box.appendChild(d);
-          return;
+      // Chips de multi-seleção (um clique = alterna).
+      function buildChips(key) {
+        const wrap = el('div', 'chips');
+        if (!CHANNELS.length) { const e = el('div', 'set-sub'); e.textContent = '(sem canais)'; wrap.appendChild(e); return wrap; }
+        const cur = (effChan(key) || '').split(',').filter(Boolean);
+        for (const c of CHANNELS) {
+          const chip = el('button', 'chip'); chip.type = 'button'; chip.textContent = '#' + c.clean;
+          const on = cur.includes(c.id);
+          if (on) chip.classList.add('on');
+          chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+          chip.addEventListener('click', () => {
+            const set = new Set((effChan(key) || '').split(',').filter(Boolean));
+            if (set.has(c.id)) set.delete(c.id); else set.add(c.id);
+            setPendingChan(key, [...set].join(','));
+          });
+          wrap.appendChild(chip);
         }
-        for (const s of settings) {
-          const row = document.createElement('div');
-          row.className = 'flag-row';
-          const left = document.createElement('div');
-          const name = document.createElement('div');
-          name.className = 'flag-name'; name.textContent = s.label;
-          const sub = document.createElement('div');
-          sub.className = 'flag-sub'; sub.textContent = s.key;
-          left.appendChild(name); left.appendChild(sub);
+        return wrap;
+      }
 
-          const sel = document.createElement('select');
-          sel.className = 'chan-select';
-          sel.dataset.key = s.key;
+      function channelControl(key) {
+        const meta = CHAN_META[key];
+        if (!meta) return document.createTextNode('');
+        return meta.kind === 'channel-list' ? buildChips(key) : buildDropdown(key, meta);
+      }
 
-          if (s.kind === 'channel-list') {
-            sel.multiple = true;
-            const chosen = (s.value || '').split(',').filter(Boolean);
-            for (const c of CHANNELS) {
-              const o = document.createElement('option');
-              o.value = c.id; o.textContent = '#' + c.name;
-              if (chosen.includes(c.id)) o.selected = true;
-              sel.appendChild(o);
-            }
-            sel.addEventListener('change', () => {
-              const vals = [...sel.selectedOptions].map((o) => o.value).join(',');
-              saveChannel(s.key, vals, sel);
-            });
-          } else {
-            const def = document.createElement('option');
-            def.value = ''; def.textContent = '— (default) —';
-            sel.appendChild(def);
-            if (s.kind === 'channel-or-current') {
-              const cur = document.createElement('option');
-              cur.value = 'current'; cur.textContent = 'Onde a pessoa falou';
-              sel.appendChild(cur);
-            }
-            for (const c of CHANNELS) {
-              const o = document.createElement('option');
-              o.value = c.id; o.textContent = '#' + c.name;
-              sel.appendChild(o);
-            }
-            sel.value = s.value || '';
-            sel.addEventListener('change', () => saveChannel(s.key, sel.value, sel));
+      function featureRow(key) {
+        const meta = FLAGS_META[key];
+        if (!meta) return null;
+        const row = el('div', 'set-row'); if (isFlagPending(key)) row.classList.add('pending');
+        const lbl = el('div', 'lbl');
+        lbl.appendChild(el('span', 'pending-dot'));
+        const nn = el('div', 'set-name'); nn.textContent = meta.label; lbl.appendChild(nn);
+        const sw = el('label', 'switch');
+        const inp = document.createElement('input'); inp.type = 'checkbox'; inp.checked = !!effFlag(key);
+        const sl = el('span', 'slider'); sw.appendChild(inp); sw.appendChild(sl);
+        inp.addEventListener('change', () => setPendingFlag(key, inp.checked));
+        row.appendChild(lbl); row.appendChild(sw);
+        return row;
+      }
+
+      function channelRow(key, sub) {
+        const meta = CHAN_META[key];
+        const row = el('div', sub ? 'sub-row' : 'set-row'); if (isChanPending(key)) row.classList.add('pending');
+        const lbl = el('div', 'lbl');
+        lbl.appendChild(el('span', 'pending-dot'));
+        const nn = el('div', 'set-name'); nn.textContent = meta ? meta.label : key; lbl.appendChild(nn);
+        row.appendChild(lbl); row.appendChild(channelControl(key));
+        return row;
+      }
+
+      function renderSettings() {
+        const box = document.getElementById('settingsBox');
+        box.textContent = '';
+        if (!Object.keys(FLAGS_META).length) {
+          const d = el('div', 'empty'); d.textContent = 'A carregar…'; box.appendChild(d); return;
+        }
+        const gMod = el('div', 'group mod');
+        const hMod = el('div', 'group-head'); hMod.textContent = 'Moderação'; gMod.appendChild(hMod);
+        for (const k of MOD_FLAGS) { const r = featureRow(k); if (r) gMod.appendChild(r); }
+        for (const ck of MOD_CHANS) if (CHAN_META[ck]) gMod.appendChild(channelRow(ck, false));
+        box.appendChild(gMod);
+
+        const gCom = el('div', 'group');
+        const hCom = el('div', 'group-head'); hCom.textContent = 'Comunidade'; gCom.appendChild(hCom);
+        for (const k of COM_FLAGS) {
+          const r = featureRow(k); if (!r) continue; gCom.appendChild(r);
+          const subs = (FEATURE_CHANS[k] || []).filter((sk) => CHAN_META[sk]);
+          if (subs.length) {
+            const wrap = el('div', 'sub-rows'); if (!effFlag(k)) wrap.classList.add('dimmed');
+            for (const sk of subs) wrap.appendChild(channelRow(sk, true));
+            gCom.appendChild(wrap);
           }
-          row.appendChild(left); row.appendChild(sel);
-          box.appendChild(row);
+        }
+        box.appendChild(gCom);
+      }
+
+      function updateSaveBar() {
+        const bar = document.getElementById('saveBar');
+        const n = PENDING.size;
+        bar.classList.toggle('show', n > 0);
+        bar.classList.remove('ok');
+        if (n > 0) {
+          document.getElementById('saveMsg').textContent =
+            n === 1 ? '1 alteração por guardar' : n + ' alterações por guardar';
         }
       }
 
-      async function saveChannel(key, value, sel) {
-        sel.disabled = true;
-        try {
-          const r = await fetch(API_BASE + '/api/channel-settings', {
-            method: 'PATCH', credentials: 'include',
-            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + SESSION },
-            body: JSON.stringify({ key, value }),
-          });
-          if (!r.ok) throw new Error('patch ' + r.status);
-          const j = await r.json();
+      async function saveAll() {
+        const bar = document.getElementById('saveBar');
+        const btn = document.getElementById('btnSave');
+        const entries = [...PENDING.entries()];
+        if (!entries.length) return;
+        btn.disabled = true;
+        const failed = [];
+        let done = 0;
+        for (const [pk, val] of entries) {
+          document.getElementById('saveMsg').textContent = 'A guardar… (' + (done + 1) + '/' + entries.length + ')';
+          const isFlag = pk.startsWith('flag:');
+          const key = pk.slice(pk.indexOf(':') + 1);
+          try {
+            const url = isFlag ? '/api/flags' : '/api/channel-settings';
+            const body = isFlag ? { key, enabled: val } : { key, value: val };
+            const r = await fetch(API_BASE + url, {
+              method: 'PATCH', credentials: 'include',
+              headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + SESSION },
+              body: JSON.stringify(body),
+            });
+            if (!r.ok) throw new Error();
+            const j = await r.json();
+            if (isFlag) { for (const f of j.flags) SRV.flags[f.key] = f.enabled; }
+            else { for (const s of j.settings) SRV.chans[s.key] = s.value; }
+            PENDING.delete(pk); done++;
+          } catch { failed.push(CHAN_META[key]?.label || FLAGS_META[key]?.label || key); }
+        }
+        btn.disabled = false;
+        renderSettings();
+        if (failed.length) {
+          updateSaveBar();
+          banner('err', 'Falhou guardar: ' + failed.join(', ') + '. Continua(m) pendente(s).');
+        } else {
           hideBanner();
-          renderChannelSettings(j.settings);
-        } catch {
-          sel.disabled = false;
-          banner('err', 'Não foi possível guardar o canal.');
+          bar.classList.add('show', 'ok');
+          document.getElementById('saveMsg').textContent = '✓ Guardado';
+          setTimeout(() => { bar.classList.remove('show', 'ok'); }, 1800);
         }
       }
 
-      async function loadChannels(auth) {
+      function discardAll() {
+        PENDING.clear();
+        renderSettings();
+        updateSaveBar();
+      }
+
+      async function loadSettings(auth) {
         try {
-          const [chans, chanSettings] = await Promise.all([
+          const [chans, flagsRes, chanSettings] = await Promise.all([
             fetch(API_BASE + '/api/channels', auth).then((r) => r.json()),
+            fetch(API_BASE + '/api/flags', auth).then((r) => r.json()),
             fetch(API_BASE + '/api/channel-settings', auth).then((r) => r.json()),
           ]);
-          CHANNELS = chans.channels || [];
-          renderChannelSettings(chanSettings.settings || []);
+          CHANNELS = (chans.channels || []).map((c) => ({ id: c.id, name: c.name, clean: cleanChannelName(c.name) }));
+          FLAGS_META = {}; SRV.flags = {};
+          for (const f of flagsRes.flags || []) { FLAGS_META[f.key] = { label: f.label, default: f.default }; SRV.flags[f.key] = f.enabled; }
+          CHAN_META = {}; SRV.chans = {};
+          for (const s of chanSettings.settings || []) { CHAN_META[s.key] = { label: s.label, kind: s.kind }; SRV.chans[s.key] = s.value; }
+          PENDING.clear();
+          renderSettings(); updateSaveBar();
         } catch {
-          const box = document.getElementById('chansBox');
-          box.textContent = '';
-          const d = document.createElement('div');
-          d.className = 'empty'; d.textContent = 'Não foi possível carregar os canais.';
-          box.appendChild(d);
+          const box = document.getElementById('settingsBox'); box.textContent = '';
+          const d = el('div', 'empty'); d.textContent = 'Não foi possível carregar as definições.'; box.appendChild(d);
         }
       }
 
@@ -591,15 +753,13 @@
           SESSION = sj.token || '';
           // Token no header Authorization (não depende de cookies de terceiros — Brave/Safari).
           const auth = { headers: { Authorization: 'Bearer ' + SESSION }, credentials: 'include' };
-          const [stats, casesRes, flagsRes] = await Promise.all([
+          const [stats, casesRes] = await Promise.all([
             fetch(API_BASE + '/api/stats', auth).then((r) => r.json()),
             fetch(API_BASE + '/api/cases', auth).then((r) => r.json()),
-            fetch(API_BASE + '/api/flags', auth).then((r) => r.json()),
           ]);
           renderStats(stats);
           renderCases(casesRes.cases);
-          renderFlags(flagsRes.flags);
-          void loadChannels(auth); // canais em paralelo (não bloqueia o resto)
+          void loadSettings(auth); // flags + canais + definições (modelo pendente)
         } catch {
           banner('err', 'Não foi possível contactar a API na VPS.');
         }
@@ -629,6 +789,12 @@
           show('blocked');
         }
       }
+
+      document.getElementById('btnSave').addEventListener('click', saveAll);
+      document.getElementById('btnDiscard').addEventListener('click', discardAll);
+      window.addEventListener('beforeunload', (e) => {
+        if (PENDING.size > 0) { e.preventDefault(); e.returnValue = ''; }
+      });
 
       handleReturn();
     </script>
