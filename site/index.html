@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#05060f" />
     <meta name="robots" content="noindex, nofollow" />
-    <title>Vozen Helper — Acesso privado</title>
+    <title>Vozen Helper — Painel privado</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -22,13 +22,16 @@
       :root {
         --bg-0: #05060f;
         --panel: rgba(22, 25, 41, 0.72);
+        --panel-2: rgba(28, 32, 52, 0.55);
         --line: rgba(255, 255, 255, 0.1);
         --blurple: #6672ff;
         --aqua: #2ee6c8;
+        --amber: #ffc24b;
         --red: #ff5c72;
         --grad: linear-gradient(115deg, #6672ff 0%, #2ee6c8 100%);
         --text-0: #f6f7fe;
         --text-1: #a3a9c4;
+        --text-2: #6b7192;
         --f-display: "Unbounded", system-ui, sans-serif;
         --f-body: "Outfit", system-ui, sans-serif;
         --f-mono: "JetBrains Mono", ui-monospace, monospace;
@@ -42,6 +45,9 @@
           radial-gradient(110% 75% at 92% 2%, rgba(46, 230, 200, 0.16), transparent 50%);
         background-attachment: fixed; -webkit-font-smoothing: antialiased;
       }
+      body.has-panel { place-items: start center; padding: 0; }
+
+      /* ── Cartão de autenticação ─────────────────────────────── */
       .card {
         width: 100%; max-width: 420px; text-align: center;
         background: var(--panel); border: 1px solid var(--line); border-radius: 22px;
@@ -90,10 +96,7 @@
         display: inline-flex; align-items: center; gap: 9px; padding: 9px 18px; border-radius: 999px;
         font-family: var(--f-mono); font-size: 13.5px; font-weight: 700; letter-spacing: 0.02em; margin-bottom: 18px;
       }
-      .badge--ok { color: var(--aqua); background: rgba(46, 230, 200, 0.12); border: 1px solid rgba(46, 230, 200, 0.35); }
       .badge--bad { color: var(--red); background: rgba(255, 92, 114, 0.12); border: 1px solid rgba(255, 92, 114, 0.35); }
-      .who { font-size: 14px; color: var(--text-1); margin-top: 4px; }
-      .who b { color: var(--text-0); }
       .retry { display: inline-block; margin-top: 22px; font-size: 13.5px; color: var(--text-1); text-decoration: underline; cursor: pointer; }
       .foot { margin-top: 26px; font-family: var(--f-mono); font-size: 11.5px; color: rgba(163, 169, 196, 0.5); }
       .spinner {
@@ -102,11 +105,61 @@
         animation: spin 0.8s linear infinite;
       }
       @keyframes spin { to { transform: rotate(360deg); } }
-      @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } .btn:hover { transform: none; } }
+
+      /* ── Painel ─────────────────────────────────────────────── */
+      #panel { display: none; width: 100%; max-width: 1080px; padding: 30px 22px 80px; }
+      #panel.show { display: block; }
+      .p-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
+      .p-brand { display: inline-flex; align-items: center; gap: 12px; }
+      .p-brand .mark { width: 42px; height: 42px; margin: 0; border-radius: 12px; }
+      .p-brand .mark svg { width: 24px; height: 24px; }
+      .p-title { font-family: var(--f-display); font-size: 20px; font-weight: 800; color: var(--text-0); letter-spacing: -0.02em; }
+      .p-user { font-size: 13px; color: var(--text-2); font-family: var(--f-mono); }
+      .p-logout {
+        background: var(--panel); border: 1px solid var(--line); color: var(--text-1);
+        padding: 9px 15px; border-radius: 11px; cursor: pointer; font-family: var(--f-body); font-size: 14px; font-weight: 500;
+      }
+      .p-logout:hover { border-color: var(--red); color: var(--red); }
+
+      .banner {
+        display: none; margin: 18px 0 4px; padding: 14px 18px; border-radius: 14px;
+        font-size: 14px; line-height: 1.5;
+      }
+      .banner.show { display: block; }
+      .banner--info { background: rgba(102, 114, 255, 0.1); border: 1px solid rgba(102, 114, 255, 0.35); color: #c9cfff; }
+      .banner--err { background: rgba(255, 92, 114, 0.1); border: 1px solid rgba(255, 92, 114, 0.35); color: #ffd0d6; }
+
+      .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin: 22px 0; }
+      .stat {
+        background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px;
+      }
+      .stat b { display: block; font-family: var(--f-display); font-size: 30px; font-weight: 800; color: var(--text-0); line-height: 1; }
+      .stat span { display: block; margin-top: 8px; font-size: 13px; color: var(--text-2); font-family: var(--f-mono); text-transform: uppercase; letter-spacing: 0.08em; }
+
+      .section-title { font-family: var(--f-display); font-size: 15px; font-weight: 700; color: var(--text-0); margin: 28px 0 12px; letter-spacing: 0.02em; }
+      .table-wrap { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+      table { width: 100%; border-collapse: collapse; font-size: 14px; }
+      thead th {
+        text-align: left; padding: 12px 16px; font-family: var(--f-mono); font-size: 11.5px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-2); border-bottom: 1px solid var(--line);
+      }
+      tbody td { padding: 12px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: var(--text-1); }
+      tbody tr:last-child td { border-bottom: none; }
+      .tag {
+        display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px; font-weight: 600;
+        font-family: var(--f-mono); background: rgba(102, 114, 255, 0.15); color: #aab2ff;
+      }
+      .tag--ban, .tag--tempban, .tag--softban { background: rgba(255, 92, 114, 0.15); color: #ff9aa8; }
+      .tag--warn { background: rgba(255, 194, 75, 0.15); color: var(--amber); }
+      .tag--kick, .tag--quarantine { background: rgba(255, 148, 90, 0.15); color: #ffb489; }
+      .tag--untimeout, .tag--unban, .tag--unquarantine { background: rgba(46, 230, 200, 0.15); color: var(--aqua); }
+      .mono { font-family: var(--f-mono); font-size: 12.5px; color: var(--text-2); }
+      .empty { padding: 26px 16px; text-align: center; color: var(--text-2); font-size: 14px; }
+      @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } .btn:hover, .toggle-pass:hover { transform: none; } }
     </style>
   </head>
   <body>
-    <main class="card">
+    <main class="card" id="authCard">
       <div class="mark" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="#06070e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 3l7 3v5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6z" />
@@ -114,7 +167,7 @@
         </svg>
       </div>
 
-      <!-- Estado 0 — credenciais (antes do Discord) -->
+      <!-- Estado 0 — credenciais -->
       <section id="gate" class="status show">
         <h1>Acesso privado</h1>
         <p class="sub">Introduz as credenciais para continuar.</p>
@@ -155,13 +208,6 @@
         <div class="spinner" aria-hidden="true"></div>
       </section>
 
-      <!-- Estado C — autorizado -->
-      <section id="ok" class="status">
-        <span class="badge badge--ok">✓ ACESSO AUTORIZADO</span>
-        <h1>Bem-vindo.</h1>
-        <p class="who">Sessão iniciada como <b id="okName">tu</b>.</p>
-      </section>
-
       <!-- Estado D — bloqueado -->
       <section id="blocked" class="status">
         <span class="badge badge--bad">✕ CONTA BLOQUEADA</span>
@@ -173,21 +219,67 @@
       <p class="foot">Vozen Helper · acesso restrito</p>
     </main>
 
+    <!-- ── PAINEL ─────────────────────────────────────────────── -->
+    <section id="panel">
+      <div class="p-head">
+        <div class="p-brand">
+          <div class="mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#06070e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3l7 3v5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6z" />
+              <path d="M9 12l2 2 4-4" />
+            </svg>
+          </div>
+          <div>
+            <div class="p-title">Vozen Helper · Painel</div>
+            <div class="p-user" id="panelUser">sessão iniciada</div>
+          </div>
+        </div>
+        <button class="p-logout" id="logoutBtn" type="button">Terminar sessão</button>
+      </div>
+
+      <div class="banner" id="panelBanner"></div>
+
+      <div class="section-title">Visão geral</div>
+      <div class="stats-grid">
+        <div class="stat"><b id="stMessages">—</b><span>Mensagens</span></div>
+        <div class="stat"><b id="stJoins">—</b><span>Entradas</span></div>
+        <div class="stat"><b id="stLeaves">—</b><span>Saídas</span></div>
+        <div class="stat"><b id="stCases">—</b><span>Casos</span></div>
+      </div>
+
+      <div class="section-title">Casos de moderação recentes</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Tipo</th><th>Alvo</th><th>Moderador</th><th>Razão</th><th>Data</th></tr>
+          </thead>
+          <tbody id="casesBody">
+            <tr><td colspan="6" class="empty" id="casesEmpty">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <script>
-      // ── Acesso em dois passos: (1) credenciais, (2) login Discord ───────────────
-      // NOTA: verificação no browser = cosmética (trava o casual, não é selo real).
-      // Guardam-se só HASHES (SHA-256), não as credenciais em texto.
+      // ── Acesso em dois passos + painel ──────────────────────────────────────────
+      // (1) credenciais (hash SHA-256, cosmético), (2) login Discord.
+      // O painel só mostra dados reais quando API_BASE apontar para a API na VPS.
       const U_HASH = '5060326c2e0cdc5c11ef1416d6ad912ec3a30185b97f086591a0af2735bb7c1f';
       const P_HASH = '3700adf1f25fab8202c1343c4b0b4e3fec706d57cad574086467b8b3ddf273ec';
 
-      const CLIENT_ID = '1526211106081734666'; // app do Vozen Helper (identify)
-      const ALLOWED = '1523489275155583056'; // a tua conta
+      const CLIENT_ID = '1526211106081734666';
+      const ALLOWED = '1523489275155583056';
       const REDIRECT_URI = 'https://rexy40407.github.io/vozen-helper-bot/';
       const SCOPE = 'identify';
 
+      // URL base da API na VPS. Vazio = ainda não ligada (o painel mostra "offline").
+      // Preenche na Fase 5 (deploy) com o URL fixo do túnel/domínio.
+      const API_BASE = '';
+
       const show = (id) => {
         for (const s of document.querySelectorAll('.status')) s.classList.remove('show');
-        document.getElementById(id).classList.add('show');
+        const el = document.getElementById(id);
+        if (el) el.classList.add('show');
       };
 
       async function sha256(s) {
@@ -236,14 +328,99 @@
       document.getElementById('retryBtn').addEventListener('click', () => {
         window.location.href = authUrl();
       });
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        try {
+          if (API_BASE) await fetch(API_BASE + '/api/logout', { method: 'POST', credentials: 'include' });
+        } catch { /* ignora */ }
+        window.location.href = REDIRECT_URI;
+      });
 
-      // Ao voltar do Discord, o token vem no fragmento (#access_token=...).
+      // ── Painel ──────────────────────────────────────────────────────────────────
+      const banner = (kind, msg) => {
+        const b = document.getElementById('panelBanner');
+        b.className = 'banner show banner--' + kind;
+        b.textContent = msg;
+      };
+      const hideBanner = () => document.getElementById('panelBanner').classList.remove('show');
+
+      function showPanel(user) {
+        document.getElementById('authCard').style.display = 'none';
+        document.body.classList.add('has-panel');
+        document.getElementById('panel').classList.add('show');
+        document.getElementById('panelUser').textContent =
+          '@' + (user.global_name || user.username || 'desconhecido') + ' · ' + user.id;
+      }
+
+      function renderStats(s) {
+        document.getElementById('stMessages').textContent = Number(s.messages ?? 0).toLocaleString('pt-PT');
+        document.getElementById('stJoins').textContent = Number(s.joins ?? 0).toLocaleString('pt-PT');
+        document.getElementById('stLeaves').textContent = Number(s.leaves ?? 0).toLocaleString('pt-PT');
+        document.getElementById('stCases').textContent = Number(s.totalCases ?? 0).toLocaleString('pt-PT');
+      }
+
+      function renderCases(cases) {
+        const body = document.getElementById('casesBody');
+        body.textContent = '';
+        if (!cases || cases.length === 0) {
+          const tr = document.createElement('tr');
+          const td = document.createElement('td');
+          td.colSpan = 6; td.className = 'empty'; td.textContent = 'Sem casos registados.';
+          tr.appendChild(td); body.appendChild(tr);
+          return;
+        }
+        for (const c of cases) {
+          const tr = document.createElement('tr');
+          const cells = [
+            { t: '#' + c.id, cls: 'mono' },
+            { html: '<span class="tag tag--' + c.type + '">' + c.type + '</span>' },
+            { t: c.targetId, cls: 'mono' },
+            { t: c.moderatorId, cls: 'mono' },
+            { t: c.reason || '—' },
+            { t: new Date(c.createdAt).toLocaleString('pt-PT'), cls: 'mono' },
+          ];
+          for (const cell of cells) {
+            const td = document.createElement('td');
+            if (cell.cls) td.className = cell.cls;
+            if (cell.html) td.innerHTML = cell.html; // só strings controladas (c.type é enum)
+            else td.textContent = cell.t;
+            tr.appendChild(td);
+          }
+          body.appendChild(tr);
+        }
+      }
+
+      async function enterPanel(user, token) {
+        showPanel(user);
+        if (!API_BASE) {
+          banner('info', 'Painel ligado à tua conta. A API da VPS ainda não está ativa — os dados reais (casos e estatísticas) aparecem assim que o painel for ligado ao servidor.');
+          return;
+        }
+        hideBanner();
+        try {
+          const s = await fetch(API_BASE + '/api/session', {
+            method: 'POST', credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token }),
+          });
+          if (!s.ok) { banner('err', 'A API recusou a sessão (código ' + s.status + ').'); return; }
+          const [stats, casesRes] = await Promise.all([
+            fetch(API_BASE + '/api/stats', { credentials: 'include' }).then((r) => r.json()),
+            fetch(API_BASE + '/api/cases', { credentials: 'include' }).then((r) => r.json()),
+          ]);
+          renderStats(stats);
+          renderCases(casesRes.cases);
+        } catch {
+          banner('err', 'Não foi possível contactar a API na VPS.');
+        }
+      }
+
+      // Verificação client-side do id (funciona sem API); a API re-verifica no servidor.
       async function handleReturn() {
         const hash = new URLSearchParams(window.location.hash.slice(1));
         const token = hash.get('access_token');
-        if (!token) { show('gate'); return; } // sem token → começa pelas credenciais
+        if (!token) { show('gate'); return; }
 
-        history.replaceState(null, '', REDIRECT_URI); // limpa o token do URL
+        history.replaceState(null, '', REDIRECT_URI);
         show('loading');
 
         try {
@@ -253,9 +430,7 @@
           if (!res.ok) throw new Error('me failed');
           const user = await res.json();
           if (user.id === ALLOWED) {
-            document.getElementById('okName').textContent =
-              user.global_name || user.username || 'tu';
-            show('ok');
+            await enterPanel(user, token);
           } else {
             show('blocked');
           }
