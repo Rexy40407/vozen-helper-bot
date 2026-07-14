@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; form-action 'self'"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#05060f" />
+    <title>Política de Privacidade — Vozen Helper</title>
+    <meta name="description" content="Que dados o bot Vozen Helper guarda, porquê e como os apagar." />
+    <meta name="robots" content="index, follow" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+    <style>
+      .legal { max-width: 780px; margin: 0 auto; padding: 96px 22px 120px; position: relative; z-index: 2; }
+      .legal a.back { display: inline-flex; align-items: center; gap: 8px; color: var(--aqua); font-weight: 600; font-size: 15px; }
+      .legal a.back:hover { text-decoration: underline; }
+      .legal h1 { font-family: var(--f-display); font-size: clamp(30px, 6vw, 44px); font-weight: 800; margin: 26px 0 6px; line-height: 1.1; }
+      .legal .updated { color: #8890b0; font-size: 14px; margin-bottom: 32px; }
+      .legal h2 { font-size: 21px; font-weight: 700; margin: 38px 0 12px; color: #fff; }
+      .legal p, .legal li { color: #c3c9e2; line-height: 1.72; font-size: 16.5px; }
+      .legal ul { margin: 10px 0 10px 2px; padding-left: 20px; }
+      .legal li { margin-bottom: 9px; }
+      .legal li b, .legal p b { color: #fff; font-weight: 600; }
+      .legal code { font-family: var(--f-mono); color: var(--aqua); background: rgba(46,230,200,0.1); padding: 1px 6px; border-radius: 5px; font-size: 0.92em; }
+      .legal .callout { border: 1px solid rgba(46,230,200,0.28); background: rgba(46,230,200,0.06); border-radius: 14px; padding: 18px 20px; margin: 22px 0; }
+      .legal .callout p { margin: 0; color: #d5dbf0; }
+      .legal hr { border: none; border-top: 1px solid rgba(255,255,255,0.09); margin: 40px 0; }
+      .legal .foot-note { color: #8890b0; font-size: 14px; }
+    </style>
+  </head>
+  <body>
+    <div class="orbs" aria-hidden="true"><span class="orb orb--blurple"></span></div>
+    <main class="legal">
+      <a class="back" href="index.html">← Voltar ao Vozen Helper</a>
+      <h1>Política de Privacidade</h1>
+      <p class="updated">Última atualização: 14 de julho de 2026</p>
+
+      <p>
+        O Vozen Helper é um bot de moderação e comunidade para Discord. Esta página explica
+        exatamente que dados o bot guarda, porquê, e como os podes remover. Em linguagem
+        simples: o Vozen Helper guarda só o que precisa para moderar e para as funcionalidades
+        de comunidade — e <b>não</b> mantém um registo do conteúdo das tuas conversas. Nunca
+        pede o teu email, número de telefone nem palavra-passe.
+      </p>
+
+      <h2>Quem somos</h2>
+      <p>
+        O Vozen Helper é um bot privado, mantido por um programador independente, a correr num
+        único servidor de Discord. Não é afiliado à Discord Inc.
+      </p>
+
+      <h2>O que guardamos</h2>
+      <p>
+        Tudo o que se segue está associado ao teu <b>ID de utilizador</b> e/ou ao <b>ID do
+        servidor</b> (os identificadores numéricos que o Discord já partilha com qualquer bot).
+        Não guardamos o teu nome real.
+      </p>
+      <ul>
+        <li><b>Casos de moderação</b> — avisos, mutes, kicks e bans: tipo, motivo, quem aplicou, a data e (se aplicável) a duração, mais o histórico de infrações usado para a escalação automática de sanções.</li>
+        <li><b>Notas da staff</b> — anotações internas que os moderadores escrevem sobre um membro.</li>
+        <li><b>Cargos guardados</b> — cargos removidos temporariamente por quarentena (anti-nuke) ou "sticky roles", para poderem ser repostos.</li>
+        <li><b>Sugestões</b> — o texto que submetes no canal de sugestões, e os votos.</li>
+        <li><b>Ausência (AFK)</b> — a mensagem de ausência que defines, até a limpares.</li>
+        <li><b>Tags</b> — atalhos de texto criados pela staff.</li>
+        <li><b>Níveis & XP</b> — a tua pontuação de experiência e nível no servidor.</li>
+        <li><b>Giveaways</b> — sorteios ativos e a lista de participantes.</li>
+        <li><b>Tickets</b> — quem abriu, o estado e quem tratou. Ao fechar um ticket, é gerada uma transcrição publicada num canal só para a staff.</li>
+        <li><b>Starboard</b> — a referência (ID) das mensagens em destaque e a contagem de ⭐.</li>
+        <li><b>Configurações do servidor</b> — as opções que os admins definem para cada funcionalidade.</li>
+        <li><b>Estatísticas agregadas</b> — contagens diárias (mensagens, entradas, saídas) para o <code>/serverstats</code>, sem guardar o conteúdo das mensagens.</li>
+      </ul>
+
+      <div class="callout">
+        <p>
+          <b>O bot NÃO guarda o conteúdo do teu chat.</b> Não existe uma base de dados
+          pesquisável das tuas mensagens. As funções de <b>logging</b> publicam eventos
+          (edições, apagões, entradas/saídas) num canal que tu controlas, em tempo real —
+          esse registo fica no Discord, no canal, e não numa base de dados nossa.
+        </p>
+      </div>
+
+      <h2>Terceiros</h2>
+      <p>
+        O Vozen Helper não vende os teus dados, não os partilha com corretores de dados nem
+        redes de publicidade, e não usa o conteúdo de mensagens para treinar modelos de IA.
+        Toda a atividade do bot é processada dentro do Discord, ao abrigo da
+        <a href="https://discord.com/privacy" target="_blank" rel="noopener">Política de Privacidade da Discord</a>.
+      </p>
+
+      <h2>Os teus controlos & eliminação</h2>
+      <ul>
+        <li>Limpa a tua ausência: <code>/afk</code> deixa de estar ativo assim que voltas a falar.</li>
+        <li>Os admins do servidor podem repor configurações e apagar dados por-membro do seu servidor.</li>
+        <li>Para eliminação total de qualquer dado associado ao teu ID, pede ao dono/staff do servidor — ao remover o bot do servidor, os dados desse servidor deixam de ser usados e podem ser apagados.</li>
+      </ul>
+
+      <h2>Crianças</h2>
+      <p>
+        O Vozen Helper não se dirige a crianças. Tens de ter pelo menos <b>13 anos</b> (ou a
+        idade mínima superior exigida pelas leis do teu país) para usar o Discord e, por
+        extensão, este bot.
+      </p>
+
+      <h2>Alterações</h2>
+      <p>Podemos atualizar esta política à medida que o bot evolui. A data de "última atualização" acima reflete a versão em vigor.</p>
+
+      <hr />
+      <p class="foot-note">
+        <a href="terms.html">Termos de Serviço</a> · <a href="index.html">Início</a>
+      </p>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://cdn.discordapp.com; connect-src 'self'; media-src 'self'; form-action 'self'"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#05060f" />
+    <title>Vozen Helper — Moderação e comunidade num só bot de Discord</title>
+    <meta
+      name="description"
+      content="Vozen Helper protege e anima o teu servidor de Discord: anti-spam, anti-raid, anti-nuke, anti-scam, AutoMod, níveis, sugestões, tickets, giveaways e mais."
+    />
+
+    <meta property="og:site_name" content="Vozen Helper" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Vozen Helper — Moderação e comunidade num só bot" />
+    <meta
+      property="og:description"
+      content="Anti-spam, anti-raid, anti-nuke, anti-scam, AutoMod, níveis, sugestões, tickets e giveaways. Um bot para proteger e animar o teu servidor."
+    />
+
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="orbs" aria-hidden="true">
+      <span class="orb orb--blurple"></span>
+      <span class="orb orb--aqua"></span>
+    </div>
+
+    <a class="skip-link" href="#hero">Ir para o conteúdo</a>
+
+    <!-- ─────────────── NAVBAR ─────────────── -->
+    <header class="nav">
+      <div class="wrap nav__inner">
+        <a class="brand" href="#hero" aria-label="Vozen Helper — início">
+          <span class="brand__mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#06070e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3l7 3v5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6z" />
+              <path d="M9 12l2 2 4-4" />
+            </svg>
+          </span>
+          <span class="brand__word">Vozen <b>Helper</b></span>
+        </a>
+
+        <nav class="nav__links" aria-label="Principal">
+          <a href="#moderacao">Moderação</a>
+          <a href="#comunidade">Comunidade</a>
+          <a href="#setup">Como funciona</a>
+        </nav>
+
+        <div class="nav__actions">
+          <!-- Convite OAuth real do Vozen Helper (bot + applications.commands). -->
+          <a
+            class="btn btn--primary btn--sm"
+            href="https://discord.com/oauth2/authorize?client_id=1526211106081734666&permissions=1100518354102&integration_type=0&scope=bot+applications.commands"
+            target="_blank"
+            rel="noopener"
+          >Adicionar ao servidor</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- ─────────────── HERO ─────────────── -->
+      <section class="hero" id="hero">
+        <div class="wrap hero__inner">
+          <span class="pill">
+            <span class="pill__dot"></span>
+            Privado · um servidor · sempre online
+          </span>
+          <h1 class="hero__title">
+            Moderação e comunidade,<br />
+            <span class="grad">num só bot.</span>
+          </h1>
+          <p class="hero__sub">
+            O Vozen Helper protege o teu servidor de Discord contra spam, raids, nukes e
+            scams — e ainda o anima com níveis, sugestões, tickets e giveaways. Configura-se
+            em minutos e trabalha 24/7.
+          </p>
+          <div class="hero__cta">
+            <a
+              class="btn btn--primary btn--lg"
+              href="https://discord.com/oauth2/authorize?client_id=1526211106081734666&permissions=1100518354102&integration_type=0&scope=bot+applications.commands"
+              target="_blank"
+              rel="noopener"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19 19 0 0 0 15.6 3l-.24.48a17.6 17.6 0 0 1 4.16 1.3 15 15 0 0 0-11.06 0A17.6 17.6 0 0 1 12.63 3.5L12.4 3A19 19 0 0 0 7.7 4.4C4.8 8.7 4 13 4.2 17.2A19 19 0 0 0 9.9 20l.4-.6a12 12 0 0 1-1.9-.9c.16-.12.32-.24.47-.37a13.6 13.6 0 0 0 11.6 0c.15.13.3.25.47.37-.6.36-1.24.66-1.9.9l.4.6a19 19 0 0 0 5.7-2.8c.28-4.9-.76-9.16-3.36-12.8ZM9.7 14.7c-1.1 0-2-1-2-2.3 0-1.24.88-2.28 2-2.28s2.02 1.04 2 2.28c0 1.26-.9 2.3-2 2.3Zm4.6 0c-1.1 0-2-1-2-2.3 0-1.24.88-2.28 2-2.28s2.02 1.04 2 2.28c0 1.26-.88 2.3-2 2.3Z" /></svg>
+              Adicionar ao servidor
+            </a>
+            <a class="btn btn--ghost btn--lg" href="#moderacao">Ver o que faz</a>
+          </div>
+          <p class="hero__mini">Anti-spam · Anti-raid · Anti-nuke · Anti-scam · Níveis · Tickets · Giveaways</p>
+        </div>
+      </section>
+
+      <!-- ─────────────── MODERAÇÃO ─────────────── -->
+      <section class="section" id="moderacao">
+        <div class="wrap">
+          <header class="head">
+            <span class="eyebrow">Moderação</span>
+            <h2>Proteção que nunca dorme</h2>
+            <p>Sete camadas de defesa que agem antes de tu sequer veres o problema.</p>
+          </header>
+
+          <div class="cards">
+            <article class="card">
+              <span class="card__ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" /></svg>
+              </span>
+              <h3>Anti-spam por calor</h3>
+              <p>Um sistema de "heat" mede o ritmo, repetições e menções de cada membro e trava floods automaticamente, com escalação progressiva.</p>
+            </article>
+
+            <article class="card">
+              <span class="card__ic card__ic--aqua">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l8 4v5c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V7z" /><path d="M12 8v5" /><circle cx="12" cy="16" r="0.6" fill="currentColor" /></svg>
+              </span>
+              <h3>Anti-raid & join gate</h3>
+              <p>Deteta ondas de entradas coordenadas e ativa um portão de verificação, segurando contas novas ou suspeitas antes de chegarem ao chat.</p>
+            </article>
+
+            <article class="card">
+              <span class="card__ic card__ic--amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2l7 3v6c0 4-3 7.5-7 9-4-1.5-7-5-7-9V5z" /><path d="M9.5 12l1.8 1.8L15 10" /></svg>
+              </span>
+              <h3>Anti-nuke com quarentena</h3>
+              <p>Vigia o audit log em tempo real: bans em massa, apagões de canais ou cargos disparam quarentena imediata do responsável e alerta ao dono.</p>
+            </article>
+
+            <article class="card">
+              <span class="card__ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9" /><path d="M12 8v4M12 15.5v.5" /></svg>
+              </span>
+              <h3>Anti-scam & phishing</h3>
+              <p>Bloqueia links de phishing, domínios falsos de Nitro/Steam e golpes conhecidos antes que alguém clique.</p>
+            </article>
+
+            <article class="card">
+              <span class="card__ic card__ic--aqua">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="4" width="16" height="16" rx="4" /><path d="M8 12h8M8 8.5h5M8 15.5h6" /></svg>
+              </span>
+              <h3>AutoMod & filtros</h3>
+              <p>Regras nativas do Discord AutoMod geridas pelo bot, mais filtros próprios de palavras, racismo e conteúdo proibido.</p>
+            </article>
+
+            <article class="card">
+              <span class="card__ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 3h10l2 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7z" /><path d="M9 12h6M9 15h4" /></svg>
+              </span>
+              <h3>Casos & escalação</h3>
+              <p>Cada aviso, mute, kick ou ban vira um caso registado, com sanções que escalam sozinhas e expiram no tempo certo.</p>
+            </article>
+
+            <article class="card">
+              <span class="card__ic card__ic--amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5h16v11H7l-3 3z" /><path d="M8 9h8M8 12h5" /></svg>
+              </span>
+              <h3>Logging completo</h3>
+              <p>Entradas, saídas, edições, apagões, ações de moderação — tudo registado num canal, para nunca perderes o rasto do que aconteceu.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─────────────── COMUNIDADE ─────────────── -->
+      <section class="section section--alt" id="comunidade">
+        <div class="wrap">
+          <header class="head">
+            <span class="eyebrow eyebrow--amber">Comunidade</span>
+            <h2>Um servidor que dá vontade de ficar</h2>
+            <p>Envolvimento, recompensas e ferramentas de apoio — do mesmo bot.</p>
+          </header>
+
+          <div class="cards">
+            <article class="card">
+              <span class="card__ic card__ic--amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 19V9M10 19V4M16 19v-7M22 19H2" /></svg>
+              </span>
+              <h3>Níveis & XP</h3>
+              <p>Membros ganham XP ao participar e sobem de nível, com cargos de recompensa automáticos a marcos que tu defines.</p>
+            </article>
+
+            <article class="card">
+              <span class="card__ic card__ic--aqua">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 10l3-6 3 6M5 12l-2 5 4-1M19 12l2 5-4-1M12 13v7" /></svg>
+              </span>
+              <h3>Sugestões com votos</h3>
+              <p>Um canal onde a comunidade propõe ideias e vota. A staff aprova ou recusa com um clique.</p>
+            </article>
+
+            <article class="card">
+              <span class="card__ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z" /></svg>
+              </span>
+              <h3>Tickets de apoio</h3>
+              <p>Threads privadas de suporte, geridas pela staff, com transcrição guardada ao fechar.</p>
+            </article>
+
+            <article class="card">
+              <span class="card__ic card__ic--amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 8h16v3H4zM5 11v9h14v-9M12 8v12M12 8S9 3 6.5 5 9 8 12 8zM12 8s3-5 5.5-3S15 8 12 8z" /></svg>
+              </span>
+              <h3>Giveaways</h3>
+              <p>Sorteios com fim automático, requisitos de cargo e reroll — do início ao vencedor sem tocares em nada.</p>
+            </article>
+
+            <article class="card">
+              <span class="card__ic card__ic--aqua">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4" /><path d="M4 20a8 8 0 0 1 16 0" /></svg>
+              </span>
+              <h3>Self-roles</h3>
+              <p>Painéis de botões para os membros escolherem os próprios cargos, sempre dentro da hierarquia certa.</p>
+            </article>
+
+            <article class="card">
+              <span class="card__ic card__ic--amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z" /></svg>
+              </span>
+              <h3>Starboard</h3>
+              <p>As melhores mensagens, votadas com ⭐, ganham lugar num quadro de honra do servidor.</p>
+            </article>
+
+            <article class="card">
+              <span class="card__ic">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 19V5M4 19h16M8 16v-4M12 16V8M16 16v-6" /></svg>
+              </span>
+              <h3>/serverstats</h3>
+              <p>Estatísticas do servidor à mão: mensagens, entradas e saídas, num relance.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─────────────── SETUP ─────────────── -->
+      <section class="section" id="setup">
+        <div class="wrap">
+          <header class="head">
+            <span class="eyebrow">Como funciona</span>
+            <h2>A funcionar em minutos</h2>
+          </header>
+          <div class="steps">
+            <div class="step">
+              <span class="step__n">1</span>
+              <h3>Convida</h3>
+              <p>Adiciona o Vozen Helper ao teu servidor com um clique.</p>
+            </div>
+            <div class="step">
+              <span class="step__n">2</span>
+              <h3>Cargo no topo</h3>
+              <p>Coloca o cargo do bot <b>acima</b> dos moderadores, para ele poder agir sobre eles.</p>
+            </div>
+            <div class="step">
+              <span class="step__n">3</span>
+              <h3>Pronto</h3>
+              <p>Defaults sensatos entram logo em ação. Ajusta o resto quando quiseres.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─────────────── CTA FINAL ─────────────── -->
+      <section class="finale">
+        <div class="wrap">
+          <h2>Dá ao teu servidor um guarda-costas.</h2>
+          <a
+            class="btn btn--primary btn--lg"
+            href="https://discord.com/oauth2/authorize?client_id=1526211106081734666&permissions=1100518354102&integration_type=0&scope=bot+applications.commands"
+            target="_blank"
+            rel="noopener"
+          >Adicionar ao servidor</a>
+          <p class="finale__note">Privado · sempre online · configuração em minutos</p>
+        </div>
+      </section>
+    </main>
+
+    <!-- ─────────────── FOOTER ─────────────── -->
+    <footer class="foot">
+      <div class="wrap">
+        <div class="foot__grid">
+          <div>
+            <a class="brand" href="#hero" aria-label="Vozen Helper — início">
+              <span class="brand__mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#06070e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3l7 3v5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6z" />
+                  <path d="M9 12l2 2 4-4" />
+                </svg>
+              </span>
+              <span class="brand__word">Vozen <b>Helper</b></span>
+            </a>
+            <p class="foot__tag">Protege. Modera. Anima.</p>
+          </div>
+          <span class="foot__legal">
+            <a href="privacy.html">Privacidade</a>
+            <a href="terms.html">Termos</a>
+          </span>
+        </div>
+        <div class="foot__base">
+          © 2026 Vozen Helper · Sem afiliação com a Discord Inc.
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
