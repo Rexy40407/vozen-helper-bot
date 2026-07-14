@@ -260,6 +260,8 @@
       </div>
     </section>
 
+    <!-- URL da API, mantido atualizado pela VPS (deploy key). Carrega antes do script. -->
+    <script src="api-url.js"></script>
     <script>
       // ── Acesso em dois passos + painel ──────────────────────────────────────────
       // (1) credenciais (hash SHA-256, cosmético), (2) login Discord.
@@ -272,10 +274,11 @@
       const REDIRECT_URI = 'https://rexy40407.github.io/vozen-helper-bot/';
       const SCOPE = 'identify';
 
-      // URL base da API na VPS (túnel Cloudflare). NOTA: URL efémero — se a VPS/túnel
-      // reiniciar, muda e é preciso atualizar esta linha (o CSP já aceita qualquer
-      // *.trycloudflare.com). Vazio = mostra o painel em modo "offline".
-      const API_BASE = 'https://explained-proud-exhibitions-streaming.trycloudflare.com';
+      // URL base da API na VPS. Vem de api-url.js (window.API_BASE), que a VPS
+      // reescreve a cada arranque do túnel — assim o site segue sempre o URL atual
+      // mesmo que o túnel mude. Vazio = painel em modo "offline". O CSP aceita
+      // qualquer *.trycloudflare.com.
+      const API_BASE = (window.API_BASE || '').trim();
 
       const show = (id) => {
         for (const s of document.querySelectorAll('.status')) s.classList.remove('show');
