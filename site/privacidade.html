@@ -1,0 +1,192 @@
+<!doctype html>
+<!-- Vozen Helper — política de privacidade -->
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#05060f" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Vozen Helper — Política de Privacidade</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=Outfit:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-0: #05060f;
+        --panel: rgba(22, 25, 41, 0.72);
+        --line: rgba(255, 255, 255, 0.1);
+        --blurple: #6672ff;
+        --aqua: #2ee6c8;
+        --grad: linear-gradient(115deg, #6672ff 0%, #2ee6c8 100%);
+        --text-0: #f6f7fe;
+        --text-1: #a3a9c4;
+        --text-2: #6b7192;
+        --f-display: "Unbounded", system-ui, sans-serif;
+        --f-body: "Outfit", system-ui, sans-serif;
+        --f-mono: "JetBrains Mono", ui-monospace, monospace;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; min-height: 100vh; padding: 40px 24px;
+        font-family: var(--f-body); color: var(--text-1);
+        background-color: var(--bg-0);
+        background-image: radial-gradient(1200px 600px at 20% -10%, rgba(102, 114, 255, 0.12), transparent 60%),
+          radial-gradient(1000px 500px at 100% 0%, rgba(46, 230, 200, 0.08), transparent 55%);
+        line-height: 1.65;
+      }
+      main {
+        max-width: 720px; margin: 0 auto;
+        background: var(--panel); border: 1px solid var(--line);
+        border-radius: 22px; padding: 40px 36px;
+        backdrop-filter: blur(14px);
+      }
+      .eyebrow {
+        font-family: var(--f-mono); font-size: 12px; font-weight: 700;
+        letter-spacing: 0.14em; text-transform: uppercase;
+        color: var(--aqua); margin-bottom: 8px;
+      }
+      h1 {
+        font-family: var(--f-display); font-size: 27px; font-weight: 800;
+        color: var(--text-0); letter-spacing: -0.02em; margin: 0 0 6px;
+      }
+      .updated { font-family: var(--f-mono); font-size: 12px; color: var(--text-2); margin: 0 0 28px; }
+      h2 {
+        font-family: var(--f-display); font-size: 17px; font-weight: 700;
+        color: var(--text-0); margin: 32px 0 10px; letter-spacing: -0.01em;
+      }
+      p { margin: 0 0 12px; font-size: 15px; }
+      ul { margin: 0 0 12px; padding-left: 20px; }
+      li { margin-bottom: 7px; font-size: 15px; }
+      strong { color: var(--text-0); font-weight: 600; }
+      code {
+        font-family: var(--f-mono); font-size: 13px;
+        background: rgba(0, 0, 0, 0.3); padding: 1px 6px; border-radius: 6px; color: #aab2ff;
+      }
+      a { color: var(--aqua); text-decoration: none; border-bottom: 1px solid rgba(46, 230, 200, 0.3); }
+      a:hover, a:focus-visible { border-color: var(--aqua); outline: none; }
+      .cmd { font-family: var(--f-mono); font-size: 13.5px; color: var(--aqua); font-weight: 700; }
+      .divider { height: 1px; background: var(--line); border: 0; margin: 32px 0; }
+      .back {
+        display: inline-block; margin-top: 8px;
+        font-family: var(--f-mono); font-size: 13px; border: 0;
+        color: var(--text-2);
+      }
+      .back:hover { color: var(--aqua); }
+      footer {
+        max-width: 720px; margin: 22px auto 0; text-align: center;
+        font-family: var(--f-mono); font-size: 11.5px; color: rgba(163, 169, 196, 0.45);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">Vozen Helper</p>
+      <h1>Política de Privacidade</h1>
+      <p class="updated">Última atualização: 15 de julho de 2026</p>
+
+      <p>
+        O <strong>Vozen Helper</strong> é um bot de moderação e comunidade que opera
+        num único servidor Discord privado. Esta página explica que dados o bot trata,
+        para quê, durante quanto tempo, e como podes exercer os teus direitos ao abrigo
+        do Regulamento Geral sobre a Proteção de Dados (RGPD).
+      </p>
+
+      <h2>1. Quem é responsável</h2>
+      <p>
+        O responsável pelo tratamento dos dados é o <strong>administrador do servidor</strong>
+        onde o Vozen Helper está instalado. Para qualquer questão de privacidade, contacta-o
+        diretamente através do Discord (mensagem direta ou um ticket no servidor).
+      </p>
+
+      <h2>2. Que dados tratamos</h2>
+      <p>O bot trata sobretudo <strong>identificadores do Discord</strong> (o teu ID de
+        utilizador, um número público que a plataforma te atribui). Em concreto:</p>
+      <ul>
+        <li><strong>Moderação:</strong> registos de avisos, sanções, notas de staff,
+          infrações e quarentenas — associados ao teu ID.</li>
+        <li><strong>Comunidade (opcionais, criados por ti):</strong> sugestões e votos,
+          estado AFK, lembretes, participação em giveaways e o teu dia e mês de aniversário
+          (<strong>nunca o ano</strong>) se o registares.</li>
+        <li><strong>Atividade:</strong> XP/nível de participação e tickets de suporte que abras.</li>
+        <li><strong>Estatísticas:</strong> contagens diárias agregadas do servidor
+          (mensagens, entradas, saídas) — <strong>sem</strong> te identificar.</li>
+      </ul>
+      <p>
+        <strong>Não recolhemos</strong> o teu nome civil, email, número de telefone, morada,
+        endereço IP ou o conteúdo geral das tuas conversas. O bot não lê nem guarda mensagens
+        para além do estritamente necessário às funções acima.
+      </p>
+
+      <h2>3. Com que fundamento</h2>
+      <ul>
+        <li><strong>Interesse legítimo</strong> em manter o servidor seguro e funcional —
+          para os dados de moderação, XP, tickets e estatísticas.</li>
+        <li><strong>Consentimento / ato voluntário</strong> — para tudo o que és tu a criar
+          (aniversário, AFK, lembretes, sugestões, giveaways). Podes retirá-lo a qualquer momento.</li>
+      </ul>
+
+      <h2>4. Durante quanto tempo</h2>
+      <ul>
+        <li>Registos de moderação: até <strong>2 anos</strong> (infrações e quarentenas até 1 ano).</li>
+        <li>XP/nível: apagado <strong>quando sais do servidor</strong>.</li>
+        <li>Dados opcionais (aniversário, AFK, sugestões, giveaways): até os apagares,
+          saíres do servidor, ou o prazo do recurso terminar.</li>
+        <li>Estatísticas agregadas: <strong>1 ano</strong>.</li>
+        <li>Registos técnicos da API do painel: até <strong>30 dias</strong>.</li>
+      </ul>
+
+      <h2>5. Com quem partilhamos</h2>
+      <p>Os dados não são vendidos nem cedidos para marketing. São processados por serviços
+        estritamente necessários ao funcionamento:</p>
+      <ul>
+        <li><strong>Discord</strong> — a plataforma onde tudo acontece (política própria da Discord).</li>
+        <li><strong>GitHub Pages</strong> — aloja este site estático.</li>
+        <li><strong>Cloudflare</strong> — encaminha os pedidos do painel para o servidor, via túnel.</li>
+        <li><strong>O servidor (VPS)</strong> que corre o bot e guarda a base de dados.</li>
+      </ul>
+
+      <h2>6. O painel de administração</h2>
+      <p>
+        O painel web (esta página faz parte dele) é acessível a <strong>uma única conta</strong>:
+        a do administrador. Para manter a sessão iniciada, usa um <strong>cookie</strong>
+        (<code>vh_session</code>) e o <strong>armazenamento local</strong> do navegador
+        (<code>vh_sess</code>), ambos <strong>estritamente necessários</strong> e sem qualquer
+        finalidade de rastreio ou publicidade — por isso não há banner de cookies. A sessão
+        expira sozinha e é apagada ao terminar sessão. O token de login do Discord é usado
+        apenas para confirmar a identidade e <strong>não é guardado</strong>.
+      </p>
+
+      <h2>7. Os teus direitos</h2>
+      <p>Tens o direito de aceder, corrigir, apagar e limitar o tratamento dos teus dados.
+        Podes exercê-los diretamente no servidor:</p>
+      <ul>
+        <li><span class="cmd">/privacidade dados</span> — recebes, por mensagem direta, tudo
+          o que o bot tem associado a ti.</li>
+        <li><span class="cmd">/privacidade apagar</span> — apaga os teus dados voluntários.</li>
+      </ul>
+      <p>
+        Os <strong>registos de moderação</strong> podem ser mantidos mesmo após um pedido de
+        apagamento, quando forem necessários para a segurança do servidor ou para a defesa de
+        direitos (art. 17.º, n.º 3 do RGPD). Nesse caso, o bot informa-te de forma clara.
+        Se não concordares com o tratamento, podes apresentar reclamação à
+        <strong>Comissão Nacional de Proteção de Dados (CNPD)</strong>.
+      </p>
+
+      <h2>8. Alterações</h2>
+      <p>Esta política pode ser atualizada. A data no topo indica a última revisão.</p>
+
+      <hr class="divider" />
+      <a class="back" href="index.html">← Voltar ao painel</a>
+    </main>
+    <footer>Vozen Helper · painel privado</footer>
+  </body>
+</html>
