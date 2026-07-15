@@ -156,6 +156,15 @@
       .tag--warn { background: rgba(255, 194, 75, 0.15); color: var(--amber); }
       .tag--kick, .tag--quarantine { background: rgba(255, 148, 90, 0.15); color: #ffb489; }
       .tag--untimeout, .tag--unban, .tag--unquarantine { background: rgba(46, 230, 200, 0.15); color: var(--aqua); }
+      .tag--join { background: rgba(87, 242, 135, 0.15); color: #7ff0a6; }
+      .tag--leave { background: rgba(255, 92, 114, 0.15); color: #ff9aa8; }
+      .act-filters { display: flex; gap: 8px; margin: 0 0 12px; flex-wrap: wrap; }
+      .act-chip { padding: 5px 13px; border-radius: 999px; border: 1px solid var(--line); background: rgba(0,0,0,0.25); color: var(--text-1); font-family: var(--f-mono); font-size: 12.5px; cursor: pointer; transition: background 0.14s, border-color 0.14s, color 0.14s; }
+      .act-chip:hover { border-color: var(--aqua); }
+      .act-chip.on { background: rgba(46,230,200,0.14); border-color: var(--aqua); color: var(--aqua); }
+      .act-chip:focus-visible { outline: 2px solid var(--aqua); outline-offset: 2px; }
+      .act-detail { font-size: 13px; color: var(--text-1); }
+      .act-detail .sub { color: var(--text-2); font-size: 12px; }
       .mono { font-family: var(--f-mono); font-size: 12.5px; color: var(--text-2); }
       .empty { padding: 26px 16px; text-align: center; color: var(--text-2); font-size: 14px; }
 
@@ -332,6 +341,23 @@
         </table>
       </div>
 
+      <div class="section-title">Registo de atividade</div>
+      <div class="act-filters" id="actFilters">
+        <button class="act-chip on" data-type="">Tudo</button>
+        <button class="act-chip" data-type="join">Entradas</button>
+        <button class="act-chip" data-type="leave">Saídas</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Tipo</th><th>Membro</th><th>Detalhe</th><th>Data</th></tr>
+          </thead>
+          <tbody id="activityBody">
+            <tr><td colspan="4" class="empty" id="activityEmpty">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
       <div class="section-title">Definições</div>
       <div id="settingsBox">
         <div class="empty">—</div>
@@ -366,8 +392,22 @@
       // URL base da API na VPS. Vem de api-url.js (window.API_BASE), que a VPS
       // reescreve a cada arranque do túnel — assim o site segue sempre o URL atual
       // mesmo que o túnel mude. Vazio = painel em modo "offline". O CSP aceita
-      // qualquer *.trycloudflare.com.
-      const API_BASE = (window.API_BASE || '').trim();
+      // qualquer *.trycloudflare.com. `let` porque refreshApiBase() o atualiza.
+      let API_BASE = (window.API_BASE || '').trim();
+
+      // Re-busca o api-url.js SEM cache no arranque. O <script src="api-url.js"> é
+      // cacheado pelo browser (GitHub Pages), por isso quando o túnel muda de URL a
+      // versão em cache aponta para o túnel morto → "não foi possível contactar a API".
+      // Isto vai buscar sempre o URL fresco (cache-buster + no-store) e atualiza API_BASE.
+      async function refreshApiBase() {
+        try {
+          const r = await fetch('api-url.js?t=' + Date.now(), { cache: 'no-store' });
+          if (!r.ok) return;
+          const txt = await r.text();
+          const m = txt.match(/https:\/\/[^'"\s]+/); // extrai o URL (sem eval)
+          if (m) { API_BASE = m[0].trim(); window.API_BASE = API_BASE; }
+        } catch (_e) { /* mantém o valor do <script src> como fallback */ }
+      }
       let SESSION = ''; // token de sessão da API (para as escritas: toggles)
       let CHANNELS = []; // [{id,name}] canais do servidor (para os dropdowns)
       let PANEL_ID = '', PANEL_NAME = ''; // conta em sessão (para retomar no F5)
@@ -822,6 +862,81 @@
         return r.json();
       }
 
+      // ── Registo de atividade (dashboard estilo audit-log) ──────────────────
+      var ACTIVITY = [], ACT_FILTER = '', ACT_FILTERS_WIRED = false;
+
+      // Duração legível em pt-PT a partir de ms (idade de conta / tempo de permanência).
+      function fmtDuration(ms) {
+        if (ms == null || ms < 0) return '?';
+        var s = Math.floor(ms / 1000), d = Math.floor(s / 86400);
+        if (d >= 365) return Math.floor(d / 365) + ' ano(s)';
+        if (d >= 30) return Math.floor(d / 30) + ' mês(es)';
+        if (d >= 1) return d + ' dia(s)';
+        var h = Math.floor(s / 3600); if (h >= 1) return h + ' hora(s)';
+        var m = Math.floor(s / 60); if (m >= 1) return m + ' min';
+        return s + ' s';
+      }
+
+      function renderActivity() {
+        var body = document.getElementById('activityBody');
+        body.textContent = '';
+        var list = ACT_FILTER ? ACTIVITY.filter(function (e) { return e.type === ACT_FILTER; }) : ACTIVITY;
+        if (!list.length) {
+          var tr = document.createElement('tr'), td = document.createElement('td');
+          td.colSpan = 4; td.className = 'empty'; td.textContent = 'Sem atividade registada.';
+          tr.appendChild(td); body.appendChild(tr); return;
+        }
+        for (var i = 0; i < list.length; i++) {
+          var e = list[i], d = e.detail || {};
+          var tr = document.createElement('tr');
+          // Tipo (tag)
+          var tdType = document.createElement('td');
+          var span = document.createElement('span');
+          span.className = 'tag tag--' + (e.type || '').replace(/[^a-z]/g, '');
+          span.textContent = e.type === 'join' ? 'entrou' : (e.type === 'leave' ? 'saiu' : e.type);
+          tdType.appendChild(span); tr.appendChild(tdType);
+          // Membro (textContent — dado do utilizador, sem HTML)
+          var tdMember = document.createElement('td'); tdMember.className = 'mono';
+          tdMember.textContent = e.userTag || e.userId; tr.appendChild(tdMember);
+          // Detalhe (tudo textContent — seguro contra XSS)
+          var tdDetail = document.createElement('td');
+          var wrap = document.createElement('div'); wrap.className = 'act-detail';
+          var main = document.createElement('div'), sub = document.createElement('div'); sub.className = 'sub';
+          if (e.type === 'join') {
+            main.textContent = d.inviteCode ? ('Convite: ' + d.inviteCode) : 'Convite desconhecido';
+            var parts = [];
+            if (d.inviterId) parts.push('convidado por ' + d.inviterId);
+            if (d.accountAgeMs != null) parts.push('conta: ' + fmtDuration(d.accountAgeMs));
+            if (d.bot) parts.push('BOT');
+            sub.textContent = parts.join(' · ');
+          } else if (e.type === 'leave') {
+            main.textContent = d.membershipMs != null ? ('Foi membro ' + fmtDuration(d.membershipMs)) : 'Saiu';
+            sub.textContent = (d.roles && d.roles.length) ? ('cargos: ' + d.roles.join(', ')) : 'sem cargos';
+          } else {
+            main.textContent = '—';
+          }
+          wrap.appendChild(main); if (sub.textContent) wrap.appendChild(sub);
+          tdDetail.appendChild(wrap); tr.appendChild(tdDetail);
+          // Data
+          var tdDate = document.createElement('td'); tdDate.className = 'mono';
+          tdDate.textContent = new Date(e.createdAt).toLocaleString('pt-PT'); tr.appendChild(tdDate);
+          body.appendChild(tr);
+        }
+      }
+
+      function wireActFilters() {
+        if (ACT_FILTERS_WIRED) return; ACT_FILTERS_WIRED = true;
+        var chips = document.querySelectorAll('#actFilters .act-chip');
+        chips.forEach(function (ch) {
+          ch.addEventListener('click', function () {
+            chips.forEach(function (c) { c.classList.remove('on'); });
+            ch.classList.add('on');
+            ACT_FILTER = ch.getAttribute('data-type') || '';
+            renderActivity();
+          });
+        });
+      }
+
       async function loadPanelData() {
         const auth = { headers: { Authorization: 'Bearer ' + SESSION }, credentials: 'include' };
         let statsRes, casesRes;
@@ -838,6 +953,18 @@
         renderStats(statsRes);
         renderCases(casesRes.cases);
         void loadSettings(auth);
+        // Atividade: tolerante — se a API ainda não tiver o endpoint (ex.: antes do deploy),
+        // mostra vazio SEM partir o resto do painel.
+        wireActFilters();
+        try {
+          const ar = await fetch(API_BASE + '/api/activity', auth);
+          if (ar.status === 401) { expireSession(); return; }
+          const actRes = ar.ok ? await ar.json() : null;
+          ACTIVITY = (actRes && actRes.activity) || [];
+        } catch (_e) {
+          ACTIVITY = [];
+        }
+        renderActivity();
       }
 
       async function resumePanel(s) {
@@ -924,7 +1051,8 @@
       document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkIdle(); });
       window.addEventListener('focus', checkIdle);
 
-      handleReturn();
+      // Atualiza o API_BASE (sem cache) antes de arrancar — evita o túnel morto em cache.
+      refreshApiBase().then(handleReturn);
     </script>
   </body>
 </html>
