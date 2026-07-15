@@ -1,1 +1,1 @@
-window.API_BASE='https://annie-meaningful-champion-ntsc.trycloudflare.com';
+window.API_BASE='https://tired-latin-will-cleaning.trycloudflare.com';
