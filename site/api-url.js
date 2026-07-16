@@ -1,1 +1,1 @@
-window.API_BASE='https://jar-moreover-ultimately-listed.trycloudflare.com';
+window.API_BASE='https://strike-assignment-use-fair.trycloudflare.com';
