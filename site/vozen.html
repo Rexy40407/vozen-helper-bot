@@ -158,6 +158,14 @@
       .revoke:hover { background: rgba(255, 92, 114, 0.2); }
       .empty { color: var(--text-2); font-size: 14px; padding: 14px 10px; }
       .soon { color: var(--text-1); font-size: 15px; line-height: 1.6; }
+      .gname { display: flex; align-items: center; gap: 11px; min-width: 0; }
+      .gicon { width: 30px; height: 30px; border-radius: 9px; object-fit: cover; background: var(--panel-2); border: 1px solid var(--line); flex: none; }
+      tr.grow { cursor: pointer; }
+      tr.grow:hover td { background: rgba(255, 255, 255, 0.03); }
+      tr.gdetail td { padding: 0 10px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+      .gspeakers { display: flex; flex-wrap: wrap; gap: 8px; }
+      .gspk { font-family: var(--f-mono); font-size: 12px; color: var(--text-1); background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; }
+      .gspk b { color: var(--aqua); font-weight: 700; }
     </style>
   </head>
   <body>
@@ -298,11 +306,21 @@
         </div>
       </div>
 
-      <!-- Tab: Servidores (F4) -->
+      <!-- Tab: Servidores -->
       <div id="paneServers" style="display:none">
         <div class="box">
-          <h2>Servidores</h2>
-          <p class="soon">Em breve: nome e ícone de cada servidor, mensagens lidas e quem as mandou.</p>
+          <h2>Servidores do Vozen</h2>
+          <div class="tblwrap">
+            <table>
+              <thead>
+                <tr><th>Servidor</th><th>Membros</th><th>Mensagens lidas</th></tr>
+              </thead>
+              <tbody id="guildsBody"></tbody>
+            </table>
+          </div>
+          <div class="empty" id="guildsEmpty" style="display:none">Sem servidores.</div>
+          <p class="msg" id="guildsMsg"></p>
+          <p class="soon" style="margin-top:14px;font-size:12.5px">Clica num servidor para ver quem mais escreveu.</p>
         </div>
       </div>
     </section>
@@ -387,6 +405,7 @@
       $('logoutBtn').addEventListener('click', () => {
         session = '';
         discordToken = '';
+        serversLoaded = false;
         document.body.classList.remove('has-panel');
         $('panel').classList.remove('show');
         $('auth').style.display = '';
@@ -411,12 +430,94 @@
       // Tabs
       $('tabGrants').addEventListener('click', () => switchTab('grants'));
       $('tabServers').addEventListener('click', () => switchTab('servers'));
+      let serversLoaded = false;
       function switchTab(which) {
         const g = which === 'grants';
         $('tabGrants').classList.toggle('is-active', g);
         $('tabServers').classList.toggle('is-active', !g);
         $('paneGrants').style.display = g ? '' : 'none';
         $('paneServers').style.display = g ? 'none' : '';
+        if (!g && !serversLoaded) loadGuilds();
+      }
+
+      async function loadGuilds() {
+        serversLoaded = true;
+        const msg = $('guildsMsg');
+        msg.className = 'msg';
+        msg.textContent = '';
+        let d;
+        try {
+          const r = await api('/api/admin/guilds');
+          if (r.status === 403) return logoutStale();
+          d = await r.json();
+        } catch (_e) {
+          serversLoaded = false; // permite tentar de novo
+          msg.className = 'msg bad';
+          msg.textContent = 'Erro de rede.';
+          return;
+        }
+        renderGuilds(d.guilds || []);
+      }
+
+      function renderGuilds(guilds) {
+        const body = $('guildsBody');
+        body.textContent = '';
+        $('guildsEmpty').style.display = guilds.length ? 'none' : '';
+        for (const g of guilds) {
+          const tr = document.createElement('tr');
+          tr.className = 'grow';
+          const nameTd = document.createElement('td');
+          const wrap = document.createElement('div');
+          wrap.className = 'gname';
+          const ic = document.createElement(g.icon ? 'img' : 'span');
+          ic.className = 'gicon';
+          if (g.icon) {
+            ic.src = g.icon;
+            ic.alt = '';
+            ic.loading = 'lazy';
+          }
+          wrap.appendChild(ic);
+          const nm = document.createElement('span');
+          nm.textContent = g.name;
+          wrap.appendChild(nm);
+          nameTd.appendChild(wrap);
+          tr.appendChild(nameTd);
+          tr.appendChild(cell(String(g.memberCount)));
+          tr.appendChild(cell(String(g.messages)));
+          body.appendChild(tr);
+
+          // Linha de detalhe (top speakers), escondida até clicarem.
+          const dtr = document.createElement('tr');
+          dtr.className = 'gdetail';
+          dtr.style.display = 'none';
+          const dtd = document.createElement('td');
+          dtd.colSpan = 3;
+          const top = g.topSpeakers || [];
+          if (top.length) {
+            const sp = document.createElement('div');
+            sp.className = 'gspeakers';
+            for (const t of top) {
+              const chip = document.createElement('span');
+              chip.className = 'gspk';
+              chip.textContent = t.userId + ' · ';
+              const b = document.createElement('b');
+              b.textContent = String(t.count);
+              chip.appendChild(b);
+              sp.appendChild(chip);
+            }
+            dtd.appendChild(sp);
+          } else {
+            const none = document.createElement('span');
+            none.className = 'empty';
+            none.textContent = 'Ainda sem mensagens lidas.';
+            dtd.appendChild(none);
+          }
+          dtr.appendChild(dtd);
+          body.appendChild(dtr);
+          tr.addEventListener('click', () => {
+            dtr.style.display = dtr.style.display === 'none' ? '' : 'none';
+          });
+        }
       }
 
       // Mostrar/ocultar o campo "servidores" só para Premium (sincroniza também no arranque).
@@ -489,6 +590,7 @@
 
       function logoutStale() {
         session = '';
+        serversLoaded = false;
         document.body.classList.remove('has-panel');
         $('panel').classList.remove('show');
         $('auth').style.display = '';
