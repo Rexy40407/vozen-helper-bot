@@ -353,7 +353,7 @@
           <div class="tblwrap">
             <table>
               <thead>
-                <tr><th>Servidor</th><th>Membros</th><th>Mensagens lidas</th></tr>
+                <tr><th>Servidor</th><th>Membros</th><th>Mensagens lidas</th><th>Entrou em</th></tr>
               </thead>
               <tbody id="guildsBody"></tbody>
             </table>
@@ -635,6 +635,7 @@
           tr.appendChild(nameTd);
           tr.appendChild(cell(String(g.memberCount)));
           tr.appendChild(cell(String(g.messages)));
+          tr.appendChild(cell(fmtDate(g.joinedTimestamp)));
           body.appendChild(tr);
 
           // Linha de detalhe (top speakers), escondida até clicarem.
@@ -642,7 +643,7 @@
           dtr.className = 'gdetail';
           dtr.style.display = 'none';
           const dtd = document.createElement('td');
-          dtd.colSpan = 3;
+          dtd.colSpan = 4;
           const top = g.topSpeakers || [];
           if (top.length) {
             const sp = document.createElement('div');
