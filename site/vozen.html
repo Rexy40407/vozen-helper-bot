@@ -188,35 +188,16 @@
         </button>
       </div>
 
-      <!-- Estado 2: credenciais -->
-      <form class="sect" id="sCreds" autocomplete="off">
-        <p class="sub">Sessão Discord obtida. Introduz as credenciais da consola.</p>
-        <div class="field">
-          <label for="user">Utilizador</label>
-          <input id="user" type="text" autocomplete="off" spellcheck="false" />
-        </div>
-        <div class="field pass-wrap">
-          <label for="pass">Password</label>
-          <input id="pass" type="password" autocomplete="off" />
-          <button class="toggle-pass" id="togglePass" type="button" aria-label="Mostrar password">
-            <svg id="eyeOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg id="eyeOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M9.9 4.2A9.7 9.7 0 0 1 12 4c6.5 0 10 8 10 8a17 17 0 0 1-2.2 3M6.6 6.6A17 17 0 0 0 2 12s3.5 8 10 8a9.7 9.7 0 0 0 4.2-.9"/><path d="M3 3l18 18"/></svg>
-          </button>
-        </div>
-        <p class="err" id="credErr">Credenciais ou conta inválidas.</p>
-        <button class="btn" id="credBtn" type="submit">Entrar</button>
-      </form>
-
-      <!-- Estado 3: a validar -->
+      <!-- Estado 2: a validar (após o OAuth) -->
       <div class="sect" id="sLoading">
         <p class="sub">A validar…</p>
         <div class="spinner"></div>
       </div>
 
-      <!-- Estado 4: negado -->
+      <!-- Estado 3: negado -->
       <div class="sect" id="sDenied">
         <span class="badge badge--bad">● ACESSO NEGADO</span>
-        <p class="sub">Esta conta não tem acesso à consola, ou as credenciais estão erradas.</p>
+        <p class="sub">Só a conta do dono tem acesso a esta consola.</p>
         <button class="retry" id="retryBtn" type="button">Tentar de novo</button>
       </div>
 
@@ -268,11 +249,17 @@
             </div>
             <div class="field">
               <label for="gDays">Dias</label>
-              <input id="gDays" type="number" min="1" max="3650" value="365" />
+              <select id="gDays">
+                <option value="30">30 dias (mensal)</option>
+                <option value="365" selected>365 dias (anual)</option>
+              </select>
             </div>
             <div class="field" id="gSeatsWrap">
               <label for="gSeats">Servidores</label>
-              <input id="gSeats" type="number" min="1" max="100" value="1" />
+              <select id="gSeats">
+                <option value="3">3 servidores</option>
+                <option value="8">8 servidores</option>
+              </select>
             </div>
             <button class="grantbtn" id="grantBtn" type="button">Conceder</button>
           </div>
@@ -357,11 +344,11 @@
         if (id) $(id).classList.add('show');
       }
 
-      // Estado inicial: com token do Discord -> pedir credenciais; senão -> botão do Discord.
+      // Estado inicial: com token do Discord -> validar já; senão -> botão do Discord.
       function boot() {
         if (discordToken) {
-          showSect('sCreds');
-          $('user').focus();
+          showSect('sLoading');
+          doLogin();
         } else {
           showSect('sDiscord');
         }
@@ -370,25 +357,13 @@
       $('discordBtn').addEventListener('click', () => (window.location.href = authUrl()));
       $('retryBtn').addEventListener('click', () => (window.location.href = authUrl()));
 
-      $('togglePass').addEventListener('click', () => {
-        const inp = $('pass');
-        const shown = inp.type === 'text';
-        inp.type = shown ? 'password' : 'text';
-        $('eyeOn').style.display = shown ? '' : 'none';
-        $('eyeOff').style.display = shown ? 'none' : '';
-        inp.focus();
-      });
-
-      // Passo do login: password + OAuth -> POST /api/admin/login -> sessão.
-      $('sCreds').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        $('credErr').classList.remove('show');
-        showSect('sLoading');
+      // Login só com o token OAuth do Discord: o servidor confirma que a identidade é o dono
+      // (OWNER_ID) e devolve a sessão. Sem password — quem não for o dono leva 403.
+      async function doLogin() {
         try {
           const r = await fetch(API_BASE + '/api/admin/login', {
             method: 'POST',
-            headers: { 'content-type': 'application/json', authorization: 'Bearer ' + discordToken },
-            body: JSON.stringify({ user: $('user').value.trim(), pass: $('pass').value }),
+            headers: { authorization: 'Bearer ' + discordToken },
           });
           if (!r.ok) {
             showSect('sDenied');
@@ -400,7 +375,7 @@
         } catch (_e) {
           showSect('sDenied');
         }
-      });
+      }
 
       $('logoutBtn').addEventListener('click', () => {
         session = '';
