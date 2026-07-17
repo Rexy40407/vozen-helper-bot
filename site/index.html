@@ -468,6 +468,13 @@
         const p = await sha256(document.getElementById('pass').value);
         if (u === U_HASH && p === P_HASH) {
           document.getElementById('gateErr').classList.remove('show');
+          // Marca (nesta sessão do separador) que o portão foi passado — a vozen.html lê isto
+          // para não voltar a pedir a mesma password quando saltas pelo botão "Vozen".
+          try {
+            sessionStorage.setItem('vh_gate', '1');
+          } catch (_e) {
+            /* sessionStorage bloqueado: a vozen.html pede o portão à mesma */
+          }
           show('login');
         } else {
           document.getElementById('gateErr').classList.add('show');

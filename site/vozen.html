@@ -179,8 +179,27 @@
       </div>
       <h1>Vozen · Painel</h1>
 
+      <!-- Estado 0: portão do Vozen Helper (mesma password). Saltado quando vens do Helper. -->
+      <form class="sect show" id="sGate" autocomplete="off">
+        <p class="sub">Introduz as credenciais do Vozen Helper para continuar.</p>
+        <div class="field">
+          <label for="gateUser">Utilizador</label>
+          <input id="gateUser" type="text" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="field pass-wrap">
+          <label for="gatePass">Password</label>
+          <input id="gatePass" type="password" autocomplete="off" />
+          <button class="toggle-pass" id="gateToggle" type="button" aria-label="Mostrar password">
+            <svg id="gateEyeOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg id="gateEyeOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M9.9 4.2A9.7 9.7 0 0 1 12 4c6.5 0 10 8 10 8a17 17 0 0 1-2.2 3M6.6 6.6A17 17 0 0 0 2 12s3.5 8 10 8a9.7 9.7 0 0 0 4.2-.9"/><path d="M3 3l18 18"/></svg>
+          </button>
+        </div>
+        <p class="err" id="gateErr">Credenciais inválidas.</p>
+        <button class="btn" type="submit">Continuar</button>
+      </form>
+
       <!-- Estado 1: entrar com Discord -->
-      <div class="sect show" id="sDiscord">
+      <div class="sect" id="sDiscord">
         <p class="sub">Consola de administração. Precisas de entrar com a conta do dono.</p>
         <button class="btn" id="discordBtn" type="button">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4.4A19 19 0 0 0 15.3 3l-.2.5c1.7.5 2.5 1 3.4 1.6a13 13 0 0 0-10.9 0C8.4 4.5 9.4 4 11 3.5L10.7 3A19 19 0 0 0 6 4.4C3 8.8 2.2 13.1 2.6 17.3a19 19 0 0 0 5.7 2.9l.5-.8c-.8-.3-1.5-.6-2.2-1 .2-.1.4-.3.5-.4a13.6 13.6 0 0 0 11.8 0l.5.4c-.7.4-1.4.7-2.2 1l.5.8a19 19 0 0 0 5.7-2.9c.5-4.9-.8-9.1-3.6-12.9zM9 14.7c-.9 0-1.6-.8-1.6-1.9S8.1 11 9 11s1.7.9 1.6 1.9c0 1-.7 1.8-1.6 1.8zm6 0c-.9 0-1.6-.8-1.6-1.9S14.1 11 15 11s1.7.9 1.6 1.9c0 1-.7 1.8-1.6 1.8z"/></svg>
@@ -318,6 +337,21 @@
       const REDIRECT_URI = 'https://rexy40407.github.io/vozen-helper-bot/vozen.html';
       const SCOPE = 'identify';
 
+      // Portão cosmético — as MESMAS credenciais do Vozen Helper (SHA-256, cliente). Não é
+      // segurança a sério (o gate real é o OAuth do dono, na API); serve para que entrar direto
+      // aqui peça a mesma "porta da frente" do Helper. GATE_KEY: flag partilhada nesta sessão do
+      // separador, posta pelo Helper quando passas o portão dele, para não pedir duas vezes.
+      const U_HASH = '5060326c2e0cdc5c11ef1416d6ad912ec3a30185b97f086591a0af2735bb7c1f';
+      const P_HASH = '93b4e89b30655360c3c97641dd1f4ec2829dd863b5c126c03c74655241c06d1d';
+      const GATE_KEY = 'vh_gate';
+      const gatePassed = () => {
+        try {
+          return sessionStorage.getItem(GATE_KEY) === '1';
+        } catch (_e) {
+          return false;
+        }
+      };
+
       let discordToken = ''; // token OAuth do Discord (só para o login)
       let session = ''; // token de sessão da consola (em memória — NUNCA persistido)
 
@@ -344,15 +378,53 @@
         if (id) $(id).classList.add('show');
       }
 
-      // Estado inicial: com token do Discord -> validar já; senão -> botão do Discord.
+      // Estado inicial:
+      //  - a voltar do OAuth (tem token) -> validar já (já passaste o portão antes);
+      //  - já passaste o portão (do Helper ou aqui) -> direto ao "Entrar com Discord";
+      //  - senão -> pede o portão (mesma password do Helper).
       function boot() {
         if (discordToken) {
           showSect('sLoading');
           doLogin();
-        } else {
+        } else if (gatePassed()) {
           showSect('sDiscord');
+        } else {
+          showSect('sGate');
         }
       }
+
+      async function sha256(s) {
+        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+        return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+      }
+
+      // Mostrar/ocultar a password do portão.
+      $('gateToggle').addEventListener('click', () => {
+        const inp = $('gatePass');
+        const shown = inp.type === 'text';
+        inp.type = shown ? 'password' : 'text';
+        $('gateEyeOn').style.display = shown ? '' : 'none';
+        $('gateEyeOff').style.display = shown ? 'none' : '';
+        inp.focus();
+      });
+
+      // Portão: mesmas credenciais do Helper. Ao passar, marca a flag e mostra o "Entrar com Discord".
+      $('sGate').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const u = await sha256($('gateUser').value.trim().toLowerCase());
+        const p = await sha256($('gatePass').value);
+        if (u === U_HASH && p === P_HASH) {
+          $('gateErr').classList.remove('show');
+          try {
+            sessionStorage.setItem(GATE_KEY, '1');
+          } catch (_e) {
+            /* sessionStorage bloqueado: sem problema, apenas não persiste */
+          }
+          showSect('sDiscord');
+        } else {
+          $('gateErr').classList.add('show');
+        }
+      });
 
       $('discordBtn').addEventListener('click', () => (window.location.href = authUrl()));
       $('retryBtn').addEventListener('click', () => (window.location.href = authUrl()));
