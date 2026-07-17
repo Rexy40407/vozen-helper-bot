@@ -1,1 +1,1 @@
-window.API_BASE='https://strike-assignment-use-fair.trycloudflare.com';
+window.API_BASE='https://triple-orleans-turning-piano.trycloudflare.com';
