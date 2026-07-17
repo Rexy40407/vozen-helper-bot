@@ -108,6 +108,40 @@
       }
       @keyframes spin { to { transform: rotate(360deg); } }
 
+      /* Modal de confirmação reutilizável (Revogar, Terminar sessão). Fundo blur. */
+      .confirm-back {
+        display: none; position: fixed; inset: 0; z-index: 100; padding: 20px;
+        align-items: center; justify-content: center;
+        background: rgba(3, 4, 12, 0.6); backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px);
+      }
+      .confirm-back.show { display: flex; animation: cfade 0.14s ease; }
+      @keyframes cfade { from { opacity: 0; } to { opacity: 1; } }
+      .confirm {
+        position: relative; width: min(420px, 100%);
+        background: var(--panel); border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 18px; padding: 26px 24px 22px; box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(20px); animation: cpop 0.16s ease;
+      }
+      @keyframes cpop { from { transform: translateY(8px) scale(0.98); opacity: 0; } to { transform: none; opacity: 1; } }
+      .confirm-x {
+        position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 9px;
+        border: none; background: transparent; color: var(--text-2); font-size: 22px; line-height: 1; cursor: pointer;
+      }
+      .confirm-x:hover { color: var(--text-0); background: rgba(255, 255, 255, 0.06); }
+      .confirm-title { font-family: var(--f-display); font-size: 19px; color: var(--text-0); margin: 0 30px 10px 0; }
+      .confirm-body { font-size: 14.5px; color: var(--text-1); line-height: 1.55; margin: 0 0 22px; }
+      .confirm-actions { display: flex; gap: 10px; justify-content: flex-end; }
+      .confirm-btn {
+        padding: 11px 18px; border-radius: 11px; cursor: pointer; font-family: var(--f-body);
+        font-weight: 600; font-size: 14.5px; border: 1px solid var(--line);
+      }
+      .confirm-cancel { background: transparent; color: var(--text-1); }
+      .confirm-cancel:hover { border-color: var(--text-1); color: var(--text-0); }
+      .confirm-ok { background: var(--grad); color: #06070e; border: none; }
+      .confirm-ok:hover { filter: brightness(1.06); }
+      .confirm-ok.danger { background: var(--red); color: #1a0509; }
+      .confirm-btn:focus-visible, .confirm-x:focus-visible { outline: 2px solid var(--aqua); outline-offset: 2px; }
+
       /* ── Painel ─────────────────────────────────────────────── */
       #panel { display: none; width: 100%; max-width: 980px; padding: 30px 22px 80px; }
       #panel.show { display: block; }
@@ -331,6 +365,19 @@
       </div>
     </section>
 
+    <!-- Modal de confirmação reutilizável (Revogar / Terminar sessão) -->
+    <div class="confirm-back" id="confirmBack" aria-hidden="true">
+      <div class="confirm" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmBody">
+        <button class="confirm-x" id="confirmClose" type="button" aria-label="Fechar">×</button>
+        <h2 class="confirm-title" id="confirmTitle"></h2>
+        <p class="confirm-body" id="confirmBody"></p>
+        <div class="confirm-actions">
+          <button class="confirm-btn confirm-cancel" id="confirmCancel" type="button">Cancelar</button>
+          <button class="confirm-btn confirm-ok" id="confirmOk" type="button">Confirmar</button>
+        </div>
+      </div>
+    </div>
+
     <script>
       const API_BASE = 'https://api.vozen.org';
       const CLIENT_ID = '1526211106081734666';
@@ -376,6 +423,55 @@
       function showSect(id) {
         for (const s of document.querySelectorAll('.card .sect')) s.classList.remove('show');
         if (id) $(id).classList.add('show');
+      }
+
+      // Modal de confirmação. Devolve Promise<bool>: true só no Aceitar; false por
+      // Cancelar, X, clique no blur ou Escape. Faz focus-trap e devolve o foco ao gatilho.
+      function confirmDialog(opts) {
+        return new Promise((resolve) => {
+          const back = $('confirmBack');
+          const okBtn = $('confirmOk');
+          const cancelBtn = $('confirmCancel');
+          const closeBtn = $('confirmClose');
+          $('confirmTitle').textContent = opts.title || 'Confirmar?';
+          $('confirmBody').textContent = opts.body || '';
+          cancelBtn.textContent = opts.cancelLabel || 'Cancelar';
+          okBtn.textContent = opts.confirmLabel || 'Confirmar';
+          okBtn.classList.toggle('danger', !!opts.danger);
+          const prevFocus = document.activeElement;
+          const order = [closeBtn, cancelBtn, okBtn];
+
+          function cleanup(result) {
+            back.classList.remove('show');
+            back.setAttribute('aria-hidden', 'true');
+            document.removeEventListener('keydown', onKey, true);
+            back.removeEventListener('click', onBackdrop);
+            cancelBtn.removeEventListener('click', onCancel);
+            okBtn.removeEventListener('click', onOk);
+            closeBtn.removeEventListener('click', onCancel);
+            if (prevFocus && prevFocus.focus) prevFocus.focus();
+            resolve(result);
+          }
+          function onCancel() { cleanup(false); }
+          function onOk() { cleanup(true); }
+          function onBackdrop(e) { if (e.target === back) cleanup(false); } // clicar no blur fecha
+          function onKey(e) {
+            if (e.key === 'Escape') { e.preventDefault(); cleanup(false); }
+            else if (e.key === 'Tab') {
+              const first = order[0], last = order[order.length - 1];
+              if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+              else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+            }
+          }
+          document.addEventListener('keydown', onKey, true);
+          back.addEventListener('click', onBackdrop);
+          cancelBtn.addEventListener('click', onCancel);
+          okBtn.addEventListener('click', onOk);
+          closeBtn.addEventListener('click', onCancel);
+          back.classList.add('show');
+          back.setAttribute('aria-hidden', 'false');
+          okBtn.focus();
+        });
       }
 
       // Estado inicial:
@@ -449,7 +545,15 @@
         }
       }
 
-      $('logoutBtn').addEventListener('click', () => {
+      $('logoutBtn').addEventListener('click', async () => {
+        const ok = await confirmDialog({
+          title: 'Terminar sessão?',
+          body: 'Vais sair da consola e terás de entrar novamente com o Discord.',
+          cancelLabel: 'Cancelar',
+          confirmLabel: 'Terminar sessão',
+          danger: false,
+        });
+        if (!ok) return;
         session = '';
         discordToken = '';
         serversLoaded = false;
@@ -677,6 +781,15 @@
       }
 
       async function revoke(kind, id, btn) {
+        const label = kind === 'plus' ? 'Plus' : 'Premium';
+        const ok = await confirmDialog({
+          title: 'Revogar passe?',
+          body: 'Vais revogar o passe ' + label + ' de ' + id + '. A pessoa perde o acesso imediatamente. Esta ação não pode ser desfeita.',
+          cancelLabel: 'Cancelar',
+          confirmLabel: 'Sim, revogar',
+          danger: true,
+        });
+        if (!ok) return;
         btn.disabled = true;
         try {
           const r = await api('/api/admin/revoke', {
