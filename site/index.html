@@ -292,8 +292,32 @@
         </svg>
       </div>
 
-      <!-- Estado A — login Discord (primeiro passo; o acesso é validado na API/Discord) -->
-      <section id="login" class="status show">
+      <!-- Estado 0 — credenciais -->
+      <section id="gate" class="status show">
+        <h1>Acesso privado</h1>
+        <p class="sub">Introduz as credenciais para continuar.</p>
+        <form id="gateForm" autocomplete="off">
+          <div class="field">
+            <label for="user">Utilizador</label>
+            <input id="user" type="text" autocomplete="username" required />
+          </div>
+          <div class="field">
+            <label for="pass">Password</label>
+            <div class="pass-wrap">
+              <input id="pass" type="password" autocomplete="current-password" required />
+              <button type="button" id="togglePass" class="toggle-pass" aria-label="Mostrar password">
+                <svg id="eyeOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg id="eyeOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c6.5 0 10 7 10 7a13.2 13.2 0 0 1-2.16 2.92M6.7 6.7A13.3 13.3 0 0 0 2 11s3.5 7 10 7a9 9 0 0 0 4.3-1.06M1 1l22 22M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
+              </button>
+            </div>
+          </div>
+          <p class="err" id="gateErr">Credenciais inválidas.</p>
+          <button class="btn" type="submit">Continuar</button>
+        </form>
+      </section>
+
+      <!-- Estado A — login Discord -->
+      <section id="login" class="status">
         <h1>Um passo final</h1>
         <p class="sub">Confirma a tua identidade com o Discord.</p>
         <button class="btn" id="loginBtn" type="button">
@@ -402,8 +426,12 @@
     <script src="api-url.js"></script>
     <script>
       // ── Acesso + painel ─────────────────────────────────────────────────────────
-      // Login por Discord OAuth; o id é reconfirmado na API/Discord. O painel só mostra
-      // dados reais quando API_BASE apontar para a API na VPS.
+      // Duas fases: (1) credenciais (hash SHA-256, cosmético — a segurança real é o dono
+      // no Discord/API), (2) login Discord. O painel só mostra dados reais quando API_BASE
+      // apontar para a API na VPS.
+      const U_HASH = '5060326c2e0cdc5c11ef1416d6ad912ec3a30185b97f086591a0af2735bb7c1f';
+      const P_HASH = '93b4e89b30655360c3c97641dd1f4ec2829dd863b5c126c03c74655241c06d1d';
+
       const CLIENT_ID = '1526211106081734666';
       const ALLOWED = '1523489275155583056';
       const REDIRECT_URI = 'https://rexy40407.github.io/vozen-helper-bot/';
@@ -462,6 +490,44 @@
         const el = document.getElementById(id);
         if (el) el.classList.add('show');
       };
+
+      async function sha256(s) {
+        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+        return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+      }
+
+      // Mostrar/ocultar password
+      document.getElementById('togglePass').addEventListener('click', () => {
+        const inp = document.getElementById('pass');
+        const shown = inp.type === 'text';
+        inp.type = shown ? 'password' : 'text';
+        document.getElementById('eyeOn').style.display = shown ? '' : 'none';
+        document.getElementById('eyeOff').style.display = shown ? 'none' : '';
+        document
+          .getElementById('togglePass')
+          .setAttribute('aria-label', shown ? 'Mostrar password' : 'Ocultar password');
+        inp.focus();
+      });
+
+      // Passo 1 — credenciais (hash cosmético; o gate real é o dono no Discord/API)
+      document.getElementById('gateForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const u = await sha256(document.getElementById('user').value.trim().toLowerCase());
+        const p = await sha256(document.getElementById('pass').value);
+        if (u === U_HASH && p === P_HASH) {
+          document.getElementById('gateErr').classList.remove('show');
+          // Marca (nesta sessão do separador) que o portão foi passado — a vozen.html lê isto
+          // para não voltar a pedir a mesma password quando saltas pelo botão "Vozen".
+          try {
+            sessionStorage.setItem('vh_gate', '1');
+          } catch (_e) {
+            /* sessionStorage bloqueado: a vozen.html pede o portão à mesma */
+          }
+          show('login');
+        } else {
+          document.getElementById('gateErr').classList.add('show');
+        }
+      });
 
       // Login — Discord
       const authUrl = () =>
@@ -923,7 +989,8 @@
         document.getElementById('panel').classList.remove('show');
         document.getElementById('saveBar').classList.remove('show', 'ok');
         document.getElementById('authCard').style.display = '';
-        show('login');
+        document.getElementById('gateErr').classList.remove('show');
+        show('gate');
       }
 
       // Lê a resposta: 401 expira a sessão; qualquer outro erro HTTP lança (não se
@@ -1090,7 +1157,7 @@
         // (mesmo quando a sessão guardada curto-circuita o fluxo).
         if (token) history.replaceState(null, '', REDIRECT_URI);
         if (await restoreSession()) return; // F5 dentro dos 5 min → retoma sem re-login
-        if (!token) { show('login'); return; }
+        if (!token) { show('gate'); return; }
 
         show('loading');
 
