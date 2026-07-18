@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://cdn.discordapp.com; connect-src 'self' https://discord.com https://*.trycloudflare.com; form-action https://discord.com 'self'"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://cdn.discordapp.com; connect-src 'self' https://discord.com https://*.trycloudflare.com; form-action https://discord.com 'self'"
     />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,13 +13,38 @@
     <meta name="robots" content="noindex, nofollow" />
     <title>Vozen Helper — Painel privado</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700;800&family=Outfit:wght@400;500;600&family=JetBrains+Mono:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
     <style>
+      /* ── Fontes self-hosted (RGPD): Unbounded, Outfit e JetBrains Mono servidas de
+         assets/fonts/. A página já não carrega de fonts.googleapis.com / fonts.gstatic.com,
+         por isso o IP do visitante nunca é enviado à Google. Só os pesos usados. */
+      @font-face { font-family: "Unbounded"; font-style: normal; font-weight: 700; font-display: swap; src: url("assets/fonts/unbounded-500-cyrillic-ext.woff2") format("woff2"); unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+      @font-face { font-family: "Unbounded"; font-style: normal; font-weight: 700; font-display: swap; src: url("assets/fonts/unbounded-500-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+      @font-face { font-family: "Unbounded"; font-style: normal; font-weight: 700; font-display: swap; src: url("assets/fonts/unbounded-500-vietnamese.woff2") format("woff2"); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+      @font-face { font-family: "Unbounded"; font-style: normal; font-weight: 700; font-display: swap; src: url("assets/fonts/unbounded-500-latin-ext.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: "Unbounded"; font-style: normal; font-weight: 700; font-display: swap; src: url("assets/fonts/unbounded-500-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: "Unbounded"; font-style: normal; font-weight: 800; font-display: swap; src: url("assets/fonts/unbounded-500-cyrillic-ext.woff2") format("woff2"); unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+      @font-face { font-family: "Unbounded"; font-style: normal; font-weight: 800; font-display: swap; src: url("assets/fonts/unbounded-500-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+      @font-face { font-family: "Unbounded"; font-style: normal; font-weight: 800; font-display: swap; src: url("assets/fonts/unbounded-500-vietnamese.woff2") format("woff2"); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+      @font-face { font-family: "Unbounded"; font-style: normal; font-weight: 800; font-display: swap; src: url("assets/fonts/unbounded-500-latin-ext.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: "Unbounded"; font-style: normal; font-weight: 800; font-display: swap; src: url("assets/fonts/unbounded-500-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: "Outfit"; font-style: normal; font-weight: 400; font-display: swap; src: url("assets/fonts/outfit-400-latin-ext.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: "Outfit"; font-style: normal; font-weight: 400; font-display: swap; src: url("assets/fonts/outfit-400-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: "Outfit"; font-style: normal; font-weight: 500; font-display: swap; src: url("assets/fonts/outfit-400-latin-ext.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: "Outfit"; font-style: normal; font-weight: 500; font-display: swap; src: url("assets/fonts/outfit-400-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: "Outfit"; font-style: normal; font-weight: 600; font-display: swap; src: url("assets/fonts/outfit-400-latin-ext.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: "Outfit"; font-style: normal; font-weight: 600; font-display: swap; src: url("assets/fonts/outfit-400-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 400; font-display: swap; src: url("assets/fonts/jetbrains-mono-400-cyrillic-ext.woff2") format("woff2"); unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+      @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 400; font-display: swap; src: url("assets/fonts/jetbrains-mono-400-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+      @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 400; font-display: swap; src: url("assets/fonts/jetbrains-mono-400-greek.woff2") format("woff2"); unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF; }
+      @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 400; font-display: swap; src: url("assets/fonts/jetbrains-mono-400-vietnamese.woff2") format("woff2"); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+      @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 400; font-display: swap; src: url("assets/fonts/jetbrains-mono-400-latin-ext.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 400; font-display: swap; src: url("assets/fonts/jetbrains-mono-400-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 700; font-display: swap; src: url("assets/fonts/jetbrains-mono-400-cyrillic-ext.woff2") format("woff2"); unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+      @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 700; font-display: swap; src: url("assets/fonts/jetbrains-mono-400-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+      @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 700; font-display: swap; src: url("assets/fonts/jetbrains-mono-400-greek.woff2") format("woff2"); unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF; }
+      @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 700; font-display: swap; src: url("assets/fonts/jetbrains-mono-400-vietnamese.woff2") format("woff2"); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+      @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 700; font-display: swap; src: url("assets/fonts/jetbrains-mono-400-latin-ext.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+      @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 700; font-display: swap; src: url("assets/fonts/jetbrains-mono-400-latin.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
       :root {
         --bg-0: #05060f;
         --panel: rgba(22, 25, 41, 0.72);
@@ -267,32 +292,8 @@
         </svg>
       </div>
 
-      <!-- Estado 0 — credenciais -->
-      <section id="gate" class="status show">
-        <h1>Acesso privado</h1>
-        <p class="sub">Introduz as credenciais para continuar.</p>
-        <form id="gateForm" autocomplete="off">
-          <div class="field">
-            <label for="user">Utilizador</label>
-            <input id="user" type="text" autocomplete="username" required />
-          </div>
-          <div class="field">
-            <label for="pass">Password</label>
-            <div class="pass-wrap">
-              <input id="pass" type="password" autocomplete="current-password" required />
-              <button type="button" id="togglePass" class="toggle-pass" aria-label="Mostrar password">
-                <svg id="eyeOn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                <svg id="eyeOff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c6.5 0 10 7 10 7a13.2 13.2 0 0 1-2.16 2.92M6.7 6.7A13.3 13.3 0 0 0 2 11s3.5 7 10 7a9 9 0 0 0 4.3-1.06M1 1l22 22M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>
-              </button>
-            </div>
-          </div>
-          <p class="err" id="gateErr">Credenciais inválidas.</p>
-          <button class="btn" type="submit">Continuar</button>
-        </form>
-      </section>
-
-      <!-- Estado A — login Discord -->
-      <section id="login" class="status">
+      <!-- Estado A — login Discord (primeiro passo; o acesso é validado na API/Discord) -->
+      <section id="login" class="status show">
         <h1>Um passo final</h1>
         <p class="sub">Confirma a tua identidade com o Discord.</p>
         <button class="btn" id="loginBtn" type="button">
@@ -400,12 +401,9 @@
     <!-- URL da API, mantido atualizado pela VPS (deploy key). Carrega antes do script. -->
     <script src="api-url.js"></script>
     <script>
-      // ── Acesso em dois passos + painel ──────────────────────────────────────────
-      // (1) credenciais (hash SHA-256, cosmético), (2) login Discord.
-      // O painel só mostra dados reais quando API_BASE apontar para a API na VPS.
-      const U_HASH = '5060326c2e0cdc5c11ef1416d6ad912ec3a30185b97f086591a0af2735bb7c1f';
-      const P_HASH = '93b4e89b30655360c3c97641dd1f4ec2829dd863b5c126c03c74655241c06d1d';
-
+      // ── Acesso + painel ─────────────────────────────────────────────────────────
+      // Login por Discord OAuth; o id é reconfirmado na API/Discord. O painel só mostra
+      // dados reais quando API_BASE apontar para a API na VPS.
       const CLIENT_ID = '1526211106081734666';
       const ALLOWED = '1523489275155583056';
       const REDIRECT_URI = 'https://rexy40407.github.io/vozen-helper-bot/';
@@ -413,9 +411,25 @@
 
       // URL base da API na VPS. Vem de api-url.js (window.API_BASE), que a VPS
       // reescreve a cada arranque do túnel — assim o site segue sempre o URL atual
-      // mesmo que o túnel mude. Vazio = painel em modo "offline". O CSP aceita
-      // qualquer *.trycloudflare.com. `let` porque refreshApiBase() o atualiza.
-      let API_BASE = (window.API_BASE || '').trim();
+      // mesmo que o túnel mude. Vazio = painel em modo "offline". `let` porque
+      // refreshApiBase() o atualiza.
+      //
+      // Só se confia num URL https cujo host termine em .trycloudflare.com (allow-list).
+      // O api-url.js é same-origin, mas se fosse adulterado não pode passar a apontar o
+      // painel — e o token do Discord enviado em enter/session — para uma origem arbitrária.
+      // A verificação aplica-se ao valor INICIAL e ao refresh. NOTA (infra): a correção
+      // definitiva é um túnel nomeado / subdomínio próprio, para o wildcard
+      // *.trycloudflare.com do CSP passar a um host exato — e esta allow-list fixar-se nele.
+      function isTrustedApiBase(url) {
+        try {
+          const u = new URL(url);
+          return u.protocol === 'https:' && u.hostname.endsWith('.trycloudflare.com');
+        } catch (_e) {
+          return false;
+        }
+      }
+      const initApiBase = (window.API_BASE || '').trim();
+      let API_BASE = isTrustedApiBase(initApiBase) ? initApiBase : '';
 
       // Re-busca o api-url.js SEM cache no arranque. O <script src="api-url.js"> é
       // cacheado pelo browser (GitHub Pages), por isso quando o túnel muda de URL a
@@ -427,13 +441,19 @@
           if (!r.ok) return;
           const txt = await r.text();
           const m = txt.match(/https:\/\/[^'"\s]+/); // extrai o URL (sem eval)
-          if (m) { API_BASE = m[0].trim(); window.API_BASE = API_BASE; }
-        } catch (_e) { /* mantém o valor do <script src> como fallback */ }
+          if (!m) return;
+          const url = m[0].trim();
+          // Só troca para o novo URL se for de confiança; senão mantém o valor anterior
+          // (não passa a falar com uma origem não confiável).
+          if (!isTrustedApiBase(url)) return;
+          API_BASE = url; window.API_BASE = API_BASE;
+        } catch (_e) { /* mantém o valor atual como fallback */ }
       }
       let SESSION = ''; // token de sessão da API (para as escritas: toggles)
       let CHANNELS = []; // [{id,name}] canais do servidor (para os dropdowns)
       let PANEL_ID = '', PANEL_NAME = ''; // conta em sessão (para retomar no F5)
-      const SESS_KEY = 'vh_sess';
+      const SESS_KEY = 'vh_sess'; // guardado em sessionStorage: sobrevive ao F5 no separador,
+      // apaga-se ao fechar o separador e (ao contrário do localStorage) é particionado de frames cross-site.
       const IDLE_MS = 5 * 60 * 1000; // expira ao fim de 5 min de inatividade
       let idleTimer = null, lastTouch = 0;
 
@@ -443,45 +463,7 @@
         if (el) el.classList.add('show');
       };
 
-      async function sha256(s) {
-        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-        return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
-      }
-
-      // Mostrar/ocultar password
-      document.getElementById('togglePass').addEventListener('click', () => {
-        const inp = document.getElementById('pass');
-        const shown = inp.type === 'text';
-        inp.type = shown ? 'password' : 'text';
-        document.getElementById('eyeOn').style.display = shown ? '' : 'none';
-        document.getElementById('eyeOff').style.display = shown ? 'none' : '';
-        document
-          .getElementById('togglePass')
-          .setAttribute('aria-label', shown ? 'Mostrar password' : 'Ocultar password');
-        inp.focus();
-      });
-
-      // Passo 1 — credenciais
-      document.getElementById('gateForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const u = await sha256(document.getElementById('user').value.trim().toLowerCase());
-        const p = await sha256(document.getElementById('pass').value);
-        if (u === U_HASH && p === P_HASH) {
-          document.getElementById('gateErr').classList.remove('show');
-          // Marca (nesta sessão do separador) que o portão foi passado — a vozen.html lê isto
-          // para não voltar a pedir a mesma password quando saltas pelo botão "Vozen".
-          try {
-            sessionStorage.setItem('vh_gate', '1');
-          } catch (_e) {
-            /* sessionStorage bloqueado: a vozen.html pede o portão à mesma */
-          }
-          show('login');
-        } else {
-          document.getElementById('gateErr').classList.add('show');
-        }
-      });
-
-      // Passo 2 — Discord
+      // Login — Discord
       const authUrl = () =>
         'https://discord.com/api/oauth2/authorize' +
         '?client_id=' + encodeURIComponent(CLIENT_ID) +
@@ -542,19 +524,27 @@
         }
         for (const c of cases) {
           const tr = document.createElement('tr');
+          // Tipo: span construído por DOM (nunca innerHTML). A classe vem de uma allow-list
+          // (/^[a-z]+$/); qualquer outra coisa cai numa classe neutra. Texto via textContent.
+          const typeTd = document.createElement('td');
+          const tag = document.createElement('span');
+          const type = typeof c.type === 'string' ? c.type : '';
+          tag.className = /^[a-z]+$/.test(type) ? 'tag tag--' + type : 'tag';
+          tag.textContent = type || '—';
+          typeTd.appendChild(tag);
           const cells = [
             { t: '#' + c.id, cls: 'mono' },
-            { html: '<span class="tag tag--' + c.type + '">' + c.type + '</span>' },
+            { td: typeTd },
             { t: c.targetId, cls: 'mono' },
             { t: c.moderatorId, cls: 'mono' },
             { t: c.reason || '—' },
             { t: new Date(c.createdAt).toLocaleString('pt-PT'), cls: 'mono' },
           ];
           for (const cell of cells) {
+            if (cell.td) { tr.appendChild(cell.td); continue; }
             const td = document.createElement('td');
             if (cell.cls) td.className = cell.cls;
-            if (cell.html) td.innerHTML = cell.html; // só strings controladas (c.type é enum)
-            else td.textContent = cell.t;
+            td.textContent = cell.t;
             tr.appendChild(td);
           }
           body.appendChild(tr);
@@ -906,12 +896,12 @@
 
       // ── Sessão persistente + timeout de inatividade (5 min) ─────────────────────
       function saveSession() {
-        try { localStorage.setItem(SESS_KEY, JSON.stringify({ token: SESSION, id: PANEL_ID, name: PANEL_NAME, last: Date.now() })); } catch { /* storage indisponível */ }
+        try { sessionStorage.setItem(SESS_KEY, JSON.stringify({ token: SESSION, id: PANEL_ID, name: PANEL_NAME, last: Date.now() })); } catch { /* storage indisponível */ }
       }
       function touchSession() {
-        try { const s = JSON.parse(localStorage.getItem(SESS_KEY) || 'null'); if (s) { s.last = Date.now(); localStorage.setItem(SESS_KEY, JSON.stringify(s)); } } catch { /* */ }
+        try { const s = JSON.parse(sessionStorage.getItem(SESS_KEY) || 'null'); if (s) { s.last = Date.now(); sessionStorage.setItem(SESS_KEY, JSON.stringify(s)); } } catch { /* */ }
       }
-      function clearSession() { try { localStorage.removeItem(SESS_KEY); } catch { /* */ } }
+      function clearSession() { try { sessionStorage.removeItem(SESS_KEY); } catch { /* */ } }
 
       function armIdle() { clearTimeout(idleTimer); idleTimer = setTimeout(expireSession, IDLE_MS); }
       function onActivity() {
@@ -922,7 +912,7 @@
       }
       function checkIdle() {
         if (!SESSION) return;
-        let s; try { s = JSON.parse(localStorage.getItem(SESS_KEY) || 'null'); } catch { s = null; }
+        let s; try { s = JSON.parse(sessionStorage.getItem(SESS_KEY) || 'null'); } catch { s = null; }
         if (!s || Date.now() - (s.last || 0) > IDLE_MS) expireSession(); else armIdle();
       }
       function expireSession() {
@@ -933,9 +923,7 @@
         document.getElementById('panel').classList.remove('show');
         document.getElementById('saveBar').classList.remove('show', 'ok');
         document.getElementById('authCard').style.display = '';
-        const p = document.getElementById('pass'); if (p) p.value = '';
-        document.getElementById('gateErr').classList.remove('show');
-        show('gate');
+        show('login');
       }
 
       // Lê a resposta: 401 expira a sessão; qualquer outro erro HTTP lança (não se
@@ -1061,7 +1049,7 @@
       // Retoma a sessão guardada se ainda estiver dentro dos 5 min de inatividade.
       async function restoreSession() {
         if (!API_BASE) return false;
-        let s; try { s = JSON.parse(localStorage.getItem(SESS_KEY) || 'null'); } catch { s = null; }
+        let s; try { s = JSON.parse(sessionStorage.getItem(SESS_KEY) || 'null'); } catch { s = null; }
         if (!s || !s.token || !s.id) return false;
         if (Date.now() - (s.last || 0) > IDLE_MS) { clearSession(); return false; }
         await resumePanel(s);
@@ -1102,7 +1090,7 @@
         // (mesmo quando a sessão guardada curto-circuita o fluxo).
         if (token) history.replaceState(null, '', REDIRECT_URI);
         if (await restoreSession()) return; // F5 dentro dos 5 min → retoma sem re-login
-        if (!token) { show('gate'); return; }
+        if (!token) { show('login'); return; }
 
         show('loading');
 
