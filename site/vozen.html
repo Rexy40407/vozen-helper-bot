@@ -225,6 +225,20 @@
       .gspeakers { display: flex; flex-wrap: wrap; gap: 8px; }
       .gspk { font-family: var(--f-mono); font-size: 12px; color: var(--text-1); background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; }
       .gspk b { color: var(--aqua); font-weight: 700; }
+      /* Servidores: tabela + cartão do top-10 lado a lado; empilha em ecrãs estreitos. */
+      .servers-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start; }
+      .servers-grid > .box { margin-bottom: 0; }
+      @media (max-width: 900px) { .servers-grid { grid-template-columns: 1fr; } }
+      .gstreak { white-space: nowrap; }
+      .gstreak .off { color: var(--text-2); }
+      .toptalkers { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+      .tt { display: grid; grid-template-columns: 20px 30px minmax(0, 1fr) auto; align-items: center; gap: 11px; }
+      .tt-rank { font-family: var(--f-mono); font-size: 12px; color: var(--text-2); text-align: right; }
+      .tt-av { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; background: var(--panel-2); border: 1px solid var(--line); flex: none; }
+      .tt-av--none { display: grid; place-items: center; font-family: var(--f-mono); font-size: 12px; color: var(--text-1); }
+      .tt-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-0); font-size: 14px; }
+      .tt-name.mono { font-family: var(--f-mono); font-size: 12px; color: var(--text-1); }
+      .tt-count { font-family: var(--f-mono); font-size: 13px; font-weight: 700; color: var(--aqua); }
     </style>
   </head>
   <body>
@@ -373,19 +387,27 @@
 
       <!-- Tab: Servidores -->
       <div id="paneServers" style="display:none">
-        <div class="box">
-          <h2>Servidores do Vozen</h2>
-          <div class="tblwrap">
-            <table>
-              <thead>
-                <tr><th>Servidor</th><th>Membros</th><th>Mensagens lidas</th><th>Entrou em</th></tr>
-              </thead>
-              <tbody id="guildsBody"></tbody>
-            </table>
+        <div class="servers-grid">
+          <div class="box">
+            <h2>Servidores do Vozen</h2>
+            <div class="tblwrap">
+              <table>
+                <thead>
+                  <tr><th>Servidor</th><th>Membros</th><th>Mensagens lidas</th><th>Entrou em</th><th>Streak</th></tr>
+                </thead>
+                <tbody id="guildsBody"></tbody>
+              </table>
+            </div>
+            <div class="empty" id="guildsEmpty" style="display:none">Sem servidores.</div>
+            <p class="msg" id="guildsMsg"></p>
+            <p class="soon" style="margin-top:14px;font-size:12.5px">Clica num servidor para ver quem mais escreveu.</p>
           </div>
-          <div class="empty" id="guildsEmpty" style="display:none">Sem servidores.</div>
-          <p class="msg" id="guildsMsg"></p>
-          <p class="soon" style="margin-top:14px;font-size:12.5px">Clica num servidor para ver quem mais escreveu.</p>
+          <div class="box">
+            <h2>Top 10 — pessoas com mais mensagens</h2>
+            <ol class="toptalkers" id="topTalkersList"></ol>
+            <div class="empty" id="topTalkersEmpty" style="display:none">Sem dados.</div>
+            <p class="msg" id="topTalkersMsg"></p>
+          </div>
         </div>
       </div>
     </section>
@@ -613,7 +635,10 @@
         $('tabServers').classList.toggle('is-active', !g);
         $('paneGrants').style.display = g ? '' : 'none';
         $('paneServers').style.display = g ? 'none' : '';
-        if (!g && !serversLoaded) loadGuilds();
+        if (!g && !serversLoaded) {
+          loadGuilds();
+          loadTopTalkers();
+        }
       }
 
       async function loadGuilds() {
@@ -661,6 +686,7 @@
           tr.appendChild(cell(String(g.memberCount)));
           tr.appendChild(cell(String(g.messages)));
           tr.appendChild(cell(fmtDate(g.joinedTimestamp)));
+          tr.appendChild(streakCell(g.streak, g.bestStreak));
           body.appendChild(tr);
 
           // Linha de detalhe (top speakers), escondida até clicarem.
@@ -668,7 +694,7 @@
           dtr.className = 'gdetail';
           dtr.style.display = 'none';
           const dtd = document.createElement('td');
-          dtd.colSpan = 4;
+          dtd.colSpan = 5;
           const top = g.topSpeakers || [];
           if (top.length) {
             const sp = document.createElement('div');
@@ -711,6 +737,79 @@
         if (cls) td.className = cls;
         td.textContent = text;
         return td;
+      }
+
+      // Célula da streak do servidor: 🔥 N (com "melhor: N" no title); 0 => travessão esbatido.
+      function streakCell(streak, best) {
+        const td = document.createElement('td');
+        td.className = 'gstreak';
+        const n = Number(streak) || 0;
+        if (n > 0) {
+          td.textContent = '🔥 ' + n;
+          td.title = 'melhor: ' + Math.max(Number(best) || 0, n);
+        } else {
+          const s = document.createElement('span');
+          s.className = 'off';
+          s.textContent = '—';
+          td.appendChild(s);
+        }
+        return td;
+      }
+
+      // Top 10 global (todas as mensagens lidas, somadas entre servidores). Carregado com a tab.
+      async function loadTopTalkers() {
+        const msg = $('topTalkersMsg');
+        msg.className = 'msg';
+        msg.textContent = '';
+        let d;
+        try {
+          const r = await api('/api/admin/toptalkers');
+          if (r.status === 403) return logoutStale();
+          d = await r.json();
+        } catch (_e) {
+          msg.className = 'msg bad';
+          msg.textContent = 'Erro de rede.';
+          return;
+        }
+        renderTopTalkers(d.talkers || []);
+      }
+
+      function renderTopTalkers(talkers) {
+        const list = $('topTalkersList');
+        list.textContent = '';
+        $('topTalkersEmpty').style.display = talkers.length ? 'none' : '';
+        talkers.forEach((t, i) => {
+          const li = document.createElement('li');
+          li.className = 'tt';
+          const rank = document.createElement('span');
+          rank.className = 'tt-rank';
+          rank.textContent = String(i + 1);
+          li.appendChild(rank);
+          const label = t.username || t.id;
+          if (t.avatar) {
+            const img = document.createElement('img');
+            img.className = 'tt-av';
+            img.src = t.avatar;
+            img.alt = '';
+            img.loading = 'lazy';
+            li.appendChild(img);
+          } else {
+            const av = document.createElement('span');
+            av.className = 'tt-av tt-av--none';
+            av.textContent = (label[0] || '?').toUpperCase();
+            li.appendChild(av);
+          }
+          const name = document.createElement('span');
+          name.className = t.username ? 'tt-name' : 'tt-name mono';
+          name.textContent = label;
+          if (t.username) name.title = t.id; // o id continua acessível ao passar o rato
+          li.appendChild(name);
+          const count = document.createElement('span');
+          count.className = 'tt-count';
+          count.textContent = String(t.total);
+          li.appendChild(count);
+          list.appendChild(li);
+        });
       }
 
       async function loadPasses() {
