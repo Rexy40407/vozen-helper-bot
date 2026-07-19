@@ -438,6 +438,8 @@
       const U_HASH = '5060326c2e0cdc5c11ef1416d6ad912ec3a30185b97f086591a0af2735bb7c1f';
       const P_HASH = '93b4e89b30655360c3c97641dd1f4ec2829dd863b5c126c03c74655241c06d1d';
       const GATE_KEY = 'vh_gate';
+      const SESSION_KEY = 'vozen_admin_sess';
+      const SESSION_IDLE_MS = 5 * 60 * 1000;
       const gatePassed = () => {
         try {
           return sessionStorage.getItem(GATE_KEY) === '1';
@@ -447,7 +449,10 @@
       };
 
       let discordToken = ''; // token OAuth do Discord (só para o login)
-      let session = ''; // token de sessão da consola (em memória — NUNCA persistido)
+      let session = ''; // token de sessão da consola (persistido apenas neste separador)
+      let sessionExpiresAt = 0;
+      let sessionIdleTimer = null;
+      let lastSessionTouch = 0;
 
       // Captura o token do fragmento (#access_token=…) após o redirect do OAuth e limpa o URL.
       (function () {
@@ -521,18 +526,86 @@
         });
       }
 
+      function readStoredSession() {
+        try {
+          return JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
+        } catch (_e) {
+          return null;
+        }
+      }
+
+      function saveStoredSession() {
+        if (!session) return;
+        try {
+          sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+            token: session,
+            last: Date.now(),
+            expiresAt: sessionExpiresAt || 0,
+          }));
+        } catch (_e) {
+          /* armazenamento bloqueado: a sessão continua apenas em memória */
+        }
+      }
+
+      function clearStoredSession() {
+        try {
+          sessionStorage.removeItem(SESSION_KEY);
+        } catch (_e) {
+          /* sem armazenamento disponível */
+        }
+      }
+
+      function storedSessionIsFresh(saved, now = Date.now()) {
+        return !!(
+          saved &&
+          typeof saved.token === 'string' &&
+          saved.token &&
+          Number.isFinite(saved.last) &&
+          now - saved.last <= SESSION_IDLE_MS &&
+          (!saved.expiresAt || saved.expiresAt > now)
+        );
+      }
+
+      function armSessionIdle() {
+        clearTimeout(sessionIdleTimer);
+        sessionIdleTimer = setTimeout(logoutStale, SESSION_IDLE_MS);
+      }
+
+      function touchStoredSession() {
+        if (!session) return;
+        armSessionIdle();
+        const now = Date.now();
+        if (now - lastSessionTouch < 15_000) return;
+        lastSessionTouch = now;
+        saveStoredSession();
+      }
+
+      function checkStoredSession() {
+        if (!session) return;
+        const saved = readStoredSession();
+        if (!storedSessionIsFresh(saved)) logoutStale();
+        else armSessionIdle();
+      }
+
       // Estado inicial:
       //  - a voltar do OAuth (tem token) -> validar já (já passaste o portão antes);
+      //  - sessão ainda válida -> reabre o painel (incluindo depois de F5);
       //  - já passaste o portão (do Helper ou aqui) -> direto ao "Entrar com Discord";
       //  - senão -> pede o portão (mesma password do Helper).
       function boot() {
         if (discordToken) {
           showSect('sLoading');
           doLogin();
-        } else if (gatePassed()) {
-          showSect('sDiscord');
         } else {
-          showSect('sGate');
+          const saved = readStoredSession();
+          if (storedSessionIsFresh(saved)) {
+            session = saved.token;
+            sessionExpiresAt = Number(saved.expiresAt) || 0;
+            openPanel();
+          } else {
+            clearStoredSession();
+            showSect(gatePassed() ? 'sDiscord' : 'sGate');
+          }
         }
       }
 
@@ -586,6 +659,12 @@
           }
           const d = await r.json();
           session = d.token || '';
+          sessionExpiresAt = Number(d.expiresAt) || 0;
+          if (!session) {
+            showSect('sDenied');
+            return;
+          }
+          saveStoredSession();
           openPanel();
         } catch (_e) {
           showSect('sDenied');
@@ -601,7 +680,11 @@
           danger: false,
         });
         if (!ok) return;
+        clearTimeout(sessionIdleTimer);
+        sessionIdleTimer = null;
+        clearStoredSession();
         session = '';
+        sessionExpiresAt = 0;
         discordToken = '';
         serversLoaded = false;
         document.body.classList.remove('has-panel');
@@ -612,16 +695,19 @@
 
       // ── Painel ────────────────────────────────────────────────────
       async function api(path, opts = {}) {
-        return fetch(API_BASE + path, {
+        const response = await fetch(API_BASE + path, {
           ...opts,
           headers: { authorization: 'Bearer ' + session, ...(opts.headers || {}) },
         });
+        if (response.ok) touchStoredSession();
+        return response;
       }
 
       function openPanel() {
         $('auth').style.display = 'none';
         document.body.classList.add('has-panel');
         $('panel').classList.add('show');
+        armSessionIdle();
         loadPasses();
       }
 
@@ -865,7 +951,11 @@
       }
 
       function logoutStale() {
+        clearTimeout(sessionIdleTimer);
+        sessionIdleTimer = null;
+        clearStoredSession();
         session = '';
+        sessionExpiresAt = 0;
         serversLoaded = false;
         document.body.classList.remove('has-panel');
         $('panel').classList.remove('show');
@@ -930,6 +1020,13 @@
       }
 
       syncSeats();
+      ['pointerdown', 'keydown', 'scroll', 'mousemove'].forEach((eventName) =>
+        document.addEventListener(eventName, touchStoredSession, { passive: true }),
+      );
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') checkStoredSession();
+      });
+      window.addEventListener('focus', checkStoredSession);
       boot();
     </script>
   </body>

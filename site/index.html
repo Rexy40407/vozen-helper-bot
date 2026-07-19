@@ -549,7 +549,7 @@
         try {
           if (API_BASE) await fetch(API_BASE + '/api/logout', {
             method: 'POST', credentials: 'include',
-            headers: { Authorization: 'Bearer ' + tok },
+            headers: tok ? { Authorization: 'Bearer ' + tok } : {},
           });
         } catch { /* ignora */ }
         expireSession(); // limpa a sessão guardada + estado e volta ao login (sem reload → sem restore)
@@ -895,7 +895,10 @@
             else { url = '/api/channel-settings'; body = { key, value: val }; }
             const r = await fetch(API_BASE + url, {
               method: 'PATCH', credentials: 'include',
-              headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + SESSION },
+              headers: {
+                'Content-Type': 'application/json',
+                ...(SESSION ? { Authorization: 'Bearer ' + SESSION } : {}),
+              },
               body: JSON.stringify(body),
             });
             if (!r.ok) throw new Error();
@@ -961,24 +964,45 @@
       }
 
       // ── Sessão persistente + timeout de inatividade (5 min) ─────────────────────
+      function readSession() {
+        try {
+          let raw = sessionStorage.getItem(SESS_KEY);
+          // Migração da versão antiga, que usava localStorage. Move-se imediatamente
+          // para sessionStorage para não deixar o token persistente após fechar o separador.
+          if (!raw) {
+            raw = localStorage.getItem(SESS_KEY);
+            if (raw) {
+              sessionStorage.setItem(SESS_KEY, raw);
+              localStorage.removeItem(SESS_KEY);
+            }
+          }
+          return JSON.parse(raw || 'null');
+        } catch {
+          return null;
+        }
+      }
+
       function saveSession() {
         try { sessionStorage.setItem(SESS_KEY, JSON.stringify({ token: SESSION, id: PANEL_ID, name: PANEL_NAME, last: Date.now() })); } catch { /* storage indisponível */ }
       }
       function touchSession() {
-        try { const s = JSON.parse(sessionStorage.getItem(SESS_KEY) || 'null'); if (s) { s.last = Date.now(); sessionStorage.setItem(SESS_KEY, JSON.stringify(s)); } } catch { /* */ }
+        try { const s = readSession(); if (s) { s.last = Date.now(); sessionStorage.setItem(SESS_KEY, JSON.stringify(s)); } } catch { /* */ }
       }
-      function clearSession() { try { sessionStorage.removeItem(SESS_KEY); } catch { /* */ } }
+      function clearSession() {
+        try { sessionStorage.removeItem(SESS_KEY); } catch { /* */ }
+        try { localStorage.removeItem(SESS_KEY); } catch { /* limpa também o formato antigo */ }
+      }
 
       function armIdle() { clearTimeout(idleTimer); idleTimer = setTimeout(expireSession, IDLE_MS); }
       function onActivity() {
-        if (!SESSION) return;
+        if (!PANEL_ID) return;
         armIdle();
         const now = Date.now();
         if (now - lastTouch > 15000) { lastTouch = now; touchSession(); } // grava no máx. a cada 15s
       }
       function checkIdle() {
-        if (!SESSION) return;
-        let s; try { s = JSON.parse(sessionStorage.getItem(SESS_KEY) || 'null'); } catch { s = null; }
+        if (!PANEL_ID) return;
+        const s = readSession();
         if (!s || Date.now() - (s.last || 0) > IDLE_MS) expireSession(); else armIdle();
       }
       function expireSession() {
@@ -1077,7 +1101,10 @@
       }
 
       async function loadPanelData() {
-        const auth = { headers: { Authorization: 'Bearer ' + SESSION }, credentials: 'include' };
+        const auth = {
+          headers: SESSION ? { Authorization: 'Bearer ' + SESSION } : {},
+          credentials: 'include',
+        };
         let statsRes, casesRes;
         try {
           const [sr, cr] = await Promise.all([
@@ -1107,7 +1134,7 @@
       }
 
       async function resumePanel(s) {
-        SESSION = s.token; PANEL_ID = s.id; PANEL_NAME = s.name;
+        SESSION = s.token || ''; PANEL_ID = s.id; PANEL_NAME = s.name || 'desconhecido';
         showPanel({ id: s.id, username: s.name });
         armIdle();
         await loadPanelData();
@@ -1116,8 +1143,11 @@
       // Retoma a sessão guardada se ainda estiver dentro dos 5 min de inatividade.
       async function restoreSession() {
         if (!API_BASE) return false;
-        let s; try { s = JSON.parse(sessionStorage.getItem(SESS_KEY) || 'null'); } catch { s = null; }
-        if (!s || !s.token || !s.id) return false;
+        const s = readSession();
+        // O token Bearer é o mecanismo principal. Se a API só tiver devolvido o
+        // cookie HttpOnly (versão antiga/fallback), o id + relógio bastam para
+        // retomar; os pedidos usam `credentials: include` sem um Bearer vazio.
+        if (!s || !s.id) return false;
         if (Date.now() - (s.last || 0) > IDLE_MS) { clearSession(); return false; }
         await resumePanel(s);
         return true;
