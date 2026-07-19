@@ -226,7 +226,7 @@
       .gspk { font-family: var(--f-mono); font-size: 12px; color: var(--text-1); background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; }
       .gspk b { color: var(--aqua); font-weight: 700; }
       /* Servidores: tabela + cartão do top-10 lado a lado; empilha em ecrãs estreitos. */
-      .servers-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start; }
+      .servers-grid { display: grid; grid-template-columns: minmax(0, 1fr) 390px; gap: 16px; align-items: start; }
       .servers-grid > .box { margin-bottom: 0; }
       @media (max-width: 900px) { .servers-grid { grid-template-columns: 1fr; } }
       .gstreak { white-space: nowrap; }
@@ -236,8 +236,10 @@
       .tt-rank { font-family: var(--f-mono); font-size: 12px; color: var(--text-2); text-align: right; }
       .tt-av { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; background: var(--panel-2); border: 1px solid var(--line); flex: none; }
       .tt-av--none { display: grid; place-items: center; font-family: var(--f-mono); font-size: 12px; color: var(--text-1); }
-      .tt-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-0); font-size: 14px; }
+      .tt-person { min-width: 0; }
+      .tt-name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-0); font-size: 14px; }
       .tt-name.mono { font-family: var(--f-mono); font-size: 12px; color: var(--text-1); }
+      .tt-meta { display: block; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-2); font-family: var(--f-mono); font-size: 10.5px; }
       .tt-count { font-family: var(--f-mono); font-size: 13px; font-weight: 700; color: var(--aqua); }
     </style>
   </head>
@@ -885,11 +887,21 @@
             av.textContent = (label[0] || '?').toUpperCase();
             li.appendChild(av);
           }
+          const person = document.createElement('span');
+          person.className = 'tt-person';
           const name = document.createElement('span');
           name.className = t.username ? 'tt-name' : 'tt-name mono';
           name.textContent = label;
           if (t.username) name.title = t.id; // o id continua acessível ao passar o rato
-          li.appendChild(name);
+          person.appendChild(name);
+          const language = t.language || 'Sem dados';
+          const engine = t.engine || 'Sem dados';
+          const meta = document.createElement('span');
+          meta.className = 'tt-meta';
+          meta.textContent = language + ' · ' + engine;
+          meta.title = 'Língua mais usada: ' + language + ' · Motor mais usado: ' + engine;
+          person.appendChild(meta);
+          li.appendChild(person);
           const count = document.createElement('span');
           count.className = 'tt-count';
           count.textContent = String(t.total);
