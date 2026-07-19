@@ -240,6 +240,7 @@
       .tt-name { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-0); font-size: 14px; }
       .tt-name.mono { font-family: var(--f-mono); font-size: 12px; color: var(--text-1); }
       .tt-meta { display: block; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-2); font-family: var(--f-mono); font-size: 10.5px; }
+      .tt-meta[data-source="measured"] { color: var(--text-1); }
       .tt-count { font-family: var(--f-mono); font-size: 13px; font-weight: 700; color: var(--aqua); }
     </style>
   </head>
@@ -409,6 +410,7 @@
             <ol class="toptalkers" id="topTalkersList"></ol>
             <div class="empty" id="topTalkersEmpty" style="display:none">Sem dados.</div>
             <p class="msg" id="topTalkersMsg"></p>
+            <p class="soon" style="margin-top:14px;font-size:11.5px">Atual = configuração presente. Medido = uso observado desde a ativação do contador.</p>
           </div>
         </div>
       </div>
@@ -896,10 +898,21 @@
           person.appendChild(name);
           const language = t.language || 'Sem dados';
           const engine = t.engine || 'Sem dados';
+          const source = t.usageSource || (t.language || t.engine ? 'configured' : 'none');
+          const samples = Math.max(0, Number(t.usageSamples) || 0);
           const meta = document.createElement('span');
           meta.className = 'tt-meta';
-          meta.textContent = language + ' · ' + engine;
-          meta.title = 'Língua mais usada: ' + language + ' · Motor mais usado: ' + engine;
+          meta.dataset.source = source;
+          if (source === 'measured') {
+            meta.textContent = 'Medido (' + samples + ') · ' + language + ' · ' + engine;
+            meta.title = samples + ' mensagens medidas · Língua mais usada: ' + language + ' · Motor selecionado mais usado: ' + engine;
+          } else if (source === 'configured') {
+            meta.textContent = 'Atual · ' + language + ' · ' + engine;
+            meta.title = 'Ainda sem medições reais · Configuração atual: ' + language + ' · ' + engine;
+          } else {
+            meta.textContent = 'A medir…';
+            meta.title = 'Ainda não existem dados suficientes.';
+          }
           person.appendChild(meta);
           li.appendChild(person);
           const count = document.createElement('span');
