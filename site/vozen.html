@@ -196,6 +196,12 @@
 
       .box { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 22px; margin-bottom: 20px; backdrop-filter: blur(14px); }
       .box h2 { font-family: var(--f-display); font-size: 16px; font-weight: 700; color: var(--text-0); margin: 0 0 16px; letter-spacing: -0.01em; }
+      .box-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
+      .box-head h2 { margin: 0; }
+      .server-count { display: inline-flex; align-items: baseline; gap: 7px; flex: none; padding: 7px 11px; border: 1px solid rgba(46, 230, 200, 0.24); border-radius: 999px; background: rgba(46, 230, 200, 0.08); color: var(--text-1); font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.02em; white-space: nowrap; }
+      .server-count__value { color: var(--aqua); font-size: 14px; font-weight: 700; }
+      .server-count__label { color: var(--text-2); }
+      @media (max-width: 520px) { .box-head { align-items: flex-start; flex-direction: column; gap: 8px; } }
       .grantgrid { display: grid; grid-template-columns: 130px 1fr 175px 150px auto; gap: 12px; align-items: end; }
       @media (max-width: 720px) { .grantgrid { grid-template-columns: 1fr 1fr; } }
       .grantgrid .field { margin-bottom: 0; }
@@ -392,7 +398,13 @@
       <div id="paneServers" style="display:none">
         <div class="servers-grid">
           <div class="box">
-            <h2>Servidores do Vozen</h2>
+            <div class="box-head">
+              <h2>Servidores do Vozen</h2>
+              <span class="server-count" aria-label="Número total de servidores">
+                <strong class="server-count__value" id="guildsCount" aria-live="polite">—</strong>
+                <span class="server-count__label">servidores</span>
+              </span>
+            </div>
             <div class="tblwrap">
               <table>
                 <thead>
@@ -751,6 +763,7 @@
       }
 
       function renderGuilds(guilds) {
+        $('guildsCount').textContent = String(guilds.length);
         const body = $('guildsBody');
         body.textContent = '';
         $('guildsEmpty').style.display = guilds.length ? 'none' : '';
